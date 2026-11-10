@@ -1,36 +1,36 @@
 Feature: Early aggregated projection of sustained green and black olive intake volume (Cooperative)
   As a Client Application Developer
-  I want to request the early aggregated intake projection via GET to /api/v1/cooperatives/{cooperativeId}/intake-forecasts with campaignYear parameter
-  so I can consolidate only the tons backed by estimable plots and show the breakdown by commercial aptitude (green for table and black for oil mill)
+  I want to request the intake projection of a campaign via GET to /api/v1/intake-forecasts/{campaignYear}
+  so I can consolidate only the tons backed by estimable plots by commercial aptitude
 
   # Escenario 1: Proyección agregada basada exclusivamente en parcelas evaluadas
-  Scenario Outline: Aggregated projection based exclusively on evaluated plots
-    Given a GET request to "/api/v1/cooperatives/<cooperativeId>/intake-forecasts?campaignYear=<campaignYear>" with a technical manager token
-    When the API consolidates the expected production adding only member plots with a valid fruit set sampling, without extrapolations or arbitrary reduction coefficients
+  Scenario Outline: Aggregated projection based only on evaluated plots
+    Given a GET request to "/api/v1/intake-forecasts/<campaignYear>" sent by "<actor>" for the campaign in progress
+    When the API adds up the evaluated member plots
     Then the response status is 200
-    And the response returns "IntakeForecastResource" with totalEstimatedTons, greenOlivesTons, blackOlivesTons, unclassifiedTons, sampledPlots, totalPlots and coveragePercentage
+    And the response returns total, green, black and unclassified tons with coverage
 
     Examples:
-      | cooperativeId      | campaignYear | sampledPlots | totalPlots | coveragePercentage |
-      | coop-valle-sama-01 | 2026         | 42           | 50         | 84.0               |
+      | campaignYear | actor            |
+      | 2026         | usr-manager-0007 |
 
   # Escenario 2: Notificación de cobertura muestral parcial
-  Scenario Outline: Partial sampling coverage notification
-    Given a cooperative "<cooperativeId>" where evaluated plot coverage is <coveragePercentage>% of the roster, below 60%
-    When the API computes the aggregated projection for campaignYear <campaignYear>
+  Scenario Outline: Partial sampling coverage notice
+    Given a GET request to "/api/v1/intake-forecasts/<campaignYear>" sent by "<actor>" for a cooperative with low evaluation coverage
+    When the API computes the coverage
     Then the response status is 200
-    And the response includes status "PRELIMINARY" and an insufficient representativeness indicator warning that field evaluations must be completed
+    And the response marks the projection as PRELIMINARY
 
     Examples:
-      | cooperativeId      | campaignYear | sampledPlots | totalPlots | coveragePercentage |
-      | coop-valle-sama-01 | 2026         | 20           | 50         | 40.0               |
+      | campaignYear | actor            |
+      | 2026         | usr-manager-0007 |
 
   # Escenario 3: Acceso no autorizado para usuarios sin rol institucional
   Scenario Outline: Unauthorized access for users without institutional role
-    Given a GET request to "/api/v1/cooperatives/<cooperativeId>/intake-forecasts" issued by an account with role "<requesterRole>" without ROLE_TECHNICAL_MANAGER in the entity
-    When the service validates permissions
+    Given a GET request to "/api/v1/intake-forecasts/<campaignYear>" sent by "<actor>" from a user without the technical manager role
+    When the API checks the role
     Then the response status is 403
 
     Examples:
-      | cooperativeId      | requesterRole  |
-      | coop-valle-sama-01 | ROLE_PRODUCTOR |
+      | campaignYear | actor           |
+      | 2026         | usr-farmer-0042 |
