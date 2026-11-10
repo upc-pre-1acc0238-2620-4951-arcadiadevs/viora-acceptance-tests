@@ -7,7 +7,7 @@ Feature: Erroneous harvest record deletion in phenological history (Phenology)
   Scenario Outline: Successful harvest record deletion
     Given a DELETE request to "/api/v1/plots/<plotId>/harvest-records/<recordId>"
     When the API validates ownership, removes the erroneous record, and reactively recomputes the BBI index
-    Then the response status is 204
+    Then the response status is 200
 
     Examples:
       | plotId            | recordId   |
@@ -23,3 +23,13 @@ Feature: Erroneous harvest record deletion in phenological history (Phenology)
       | plotId                | recordId           |
       | plot-non-existent-999 | rec-2023-1         |
       | plot-jeronomo-001     | rec-non-existent-9 |
+
+  # Escenario 3: Revisión desactualizada del registro (HTTP 412 Precondition Failed)
+  Scenario Outline: Outdated record revision
+    Given a DELETE request to "/api/v1/plots/<plotId>/harvest-records/<id>" sent by "<actor>" with an If-Match header that does not match the current record version
+    When the API compares the revision
+    Then the response status is 412
+
+    Examples:
+      | plotId          | id                                   | actor           |
+      | plot-yarada-001 | 3f6b2c1e-9a4d-4e8b-b1c2-7d5e6f8a9b01 | usr-farmer-0042 |
