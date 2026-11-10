@@ -7,7 +7,7 @@ Feature: Plot removal and logical soft delete from inventory (Orchard)
   Scenario Outline: Successful plot soft delete
     Given a DELETE request to "/api/v1/plots/<plotId>" issued by the plot owner
     When the API validates ownership and executes soft delete of the plot
-    Then the response status is 204
+    Then the response status is 200
 
     Examples:
       | plotId            |
