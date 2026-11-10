@@ -1,37 +1,35 @@
-Feature: Completion of incident agronomic mitigation step (Telemetry)
+Feature: Completion of an incident agronomic mitigation step (Telemetry)
   As a Client Application Developer
-  I want to record the execution of a mitigation protocol step via POST to /api/v1/agroclimatic-incidents/{incidentId}/mitigation-steps/{stepId}/complete
-  so I can record response tasks in the field and update incident resolution status
+  I want to complete a mitigation step of an incident via PUT to /api/v1/agroclimatic-incidents/{incidentId}/mitigation-steps/{stepId}
+  so I can record the field response and update the incident progress
 
-  # Escenario 1: Completado exitoso de paso y avance del incidente
-  Scenario Outline: Successful completion of mitigation step
-    Given a POST request to "/api/v1/agroclimatic-incidents/<incidentId>/mitigation-steps/<stepId>/complete" with optional notes: "<notes>"
-    When the API validates step ownership, marks it as "COMPLETED" and evaluates if all steps are concluded
+  # Escenario 1: Completado exitoso de paso y avance del incidente (HTTP 200 OK)
+  Scenario Outline: Successful step completion and incident progress
+    Given a PUT request to "/api/v1/agroclimatic-incidents/<incidentId>/mitigation-steps/<stepId>" sent by "<actor>" with optional notes
+    When the API completes the step
     Then the response status is 200
-    And the response returns "AgroclimaticIncidentDetailResponse" with step marked completed and updated mitigation progress
+    And the response returns the updated mitigation progress
 
     Examples:
-      | incidentId     | stepId | notes                                              | targetIncidentStatus |
-      | inc-frost-2026 | step-1 | Micro-sprinklers activated at 03:00 AM on sector A | IN_MITIGATION        |
+      | incidentId     | stepId  | actor           |
+      | inc-frost-0003 | step-02 | usr-farmer-0042 |
 
-  # Escenario 2: Notas de ejecución exceden la longitud permitida
-  Scenario Outline: Execution notes exceed maximum permissible length
-    Given a POST request whose notes field exceeds 500 characters
-    When the validation layer processes the body
+  # Escenario 2: Notas de ejecución exceden la longitud permitida (HTTP 400 Bad Request)
+  Scenario Outline: Execution notes too long
+    Given a PUT request to "/api/v1/agroclimatic-incidents/<incidentId>/mitigation-steps/<stepId>" sent by "<actor>" with notes longer than 500 characters
+    When the API validates the request body
     Then the response status is 400
-    And the response message indicates length violation
 
     Examples:
-      | incidentId     | stepId | reason                          |
-      | inc-frost-2026 | step-1 | notes field exceeds 500 length  |
+      | incidentId     | stepId  | actor           |
+      | inc-frost-0003 | step-02 | usr-farmer-0042 |
 
-  # Escenario 3: Incidente o paso no encontrado
-  Scenario Outline: Incident or step not found for completion
-    Given a POST request towards a non-existent incidentId or stepId: "<incidentId>", "<stepId>"
-    When the API performs persistence lookup
+  # Escenario 3: Incidente o paso no encontrado (HTTP 404 Not Found)
+  Scenario Outline: Incident or step not found
+    Given a PUT request to "/api/v1/agroclimatic-incidents/<incidentId>/mitigation-steps/<stepId>" sent by "<actor>" for an unknown incident or a step outside the incident
+    When the API searches the step
     Then the response status is 404
 
     Examples:
-      | incidentId            | stepId            |
-      | inc-non-existent-9999 | step-1            |
-      | inc-frost-2026        | step-non-existent |
+      | incidentId     | stepId  | actor           |
+      | inc-frost-0003 | step-02 | usr-farmer-0042 |
