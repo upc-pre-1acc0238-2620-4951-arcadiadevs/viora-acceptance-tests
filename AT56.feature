@@ -1,36 +1,46 @@
-Feature: Technical manager institutional context and membership query (Membership)
+Feature: Technical manager license query (Membership)
   As a Client Application Developer
-  I want to query the institutional context of the authenticated technical manager via GET to /api/v1/manager-context
-  so I can determine the cooperatives they are assigned to, their enablement status (PENDING/ACTIVE) and the institutional identifiers needed to navigate the application
+  I want to list the licenses of the authenticated technical manager via GET to /api/v1/cooperative-licenses
+  so I can know whether the manager is in charge of a license in force
 
-  # Escenario 1: Consulta exitosa de contexto con cooperativa asignada activa
-  Scenario Outline: Successful context query with active assigned cooperative
-    Given a GET request to "/api/v1/manager-context" with a JWT token containing the role claim "<role>"
-    When the membership service queries the user institutional assignments
+  # Escenario 1: Consulta de la licencia del gestor
+  Scenario Outline: Manager license query
+    Given a GET request to "/api/v1/cooperative-licenses" sent by "<actor>" from a technical manager
+    When the API reads the licenses in charge of the manager
     Then the response status is 200
-    And the response returns "ManagerContextResource" with managerId, fullName, status "ACTIVE" and a list of linked cooperatives with cooperativeId, cooperativeName, licenseId and memberCount
+    And the response returns at most one license and whether it is in force
 
     Examples:
-      | role                   | managerId    | cooperativeId      | memberCount |
-      | ROLE_TECHNICAL_MANAGER | usr-mgr-0007 | coop-valle-sama-01 | 48          |
+      | actor            |
+      | usr-manager-0007 |
 
-  # Escenario 2: Gestor técnico con asignación institucional pendiente de confirmación
-  Scenario Outline: Technical manager with institutional assignment pending confirmation
-    Given an authenticated user "<managerId>" with technical manager role whose affiliation to the guild entity has not been approved yet
-    When the API retrieves their institutional status
+  # Escenario 2: Gestor sin licencia asignada
+  Scenario Outline: Manager without an assigned license
+    Given a GET request to "/api/v1/cooperative-licenses" sent by "<actor>" from a technical manager without a license
+    When the API reads the licenses of the manager
     Then the response status is 200
-    And the response returns status "PENDING" and an empty cooperatives array so the application shows the institutional confirmation waiting screen
+    And the response returns an empty list
 
     Examples:
-      | managerId    |
-      | usr-mgr-0099 |
+      | actor            |
+      | usr-manager-0007 |
 
-  # Escenario 3: Acceso no facultado para usuarios sin rol de gestor
-  Scenario Outline: Unauthorized access for users without manager role
-    Given a GET request to "/api/v1/manager-context" issued by a user with role "<requesterRole>"
-    When the security guard evaluates the token
+  # Escenario 3: Solicitud sin autenticación
+  Scenario Outline: Request without authentication
+    Given a GET request to "/api/v1/cooperative-licenses" sent by "<actor>" without a valid access token
+    When the API checks the identity
+    Then the response status is 401
+
+    Examples:
+      | actor            |
+      | anonymous-client |
+
+  # Escenario 4: Usuario sin rol de gestor técnico
+  Scenario Outline: User without the technical manager role
+    Given a GET request to "/api/v1/cooperative-licenses" sent by "<actor>" from a user who is not a technical manager
+    When the API checks the role
     Then the response status is 403
 
     Examples:
-      | requesterRole  |
-      | ROLE_PRODUCTOR |
+      | actor           |
+      | usr-farmer-0042 |
