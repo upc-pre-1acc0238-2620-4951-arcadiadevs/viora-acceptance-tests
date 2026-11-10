@@ -36,3 +36,13 @@ Feature: Field fruit set sampling recording and synchronization (Thinning)
     Examples:
       | plotId                |
       | plot-non-existent-999 |
+
+  # Escenario 4: Árboles duplicados o lote en conflicto (HTTP 409 Conflict)
+  Scenario Outline: Duplicated trees or conflicting batch
+    Given a POST request to "/api/v1/plots/<plotId>/samplings" sent by "<actor>" with duplicated tree identifiers in the round or a conflicting batch
+    When the API validates the sampling round
+    Then the response status is 409
+
+    Examples:
+      | plotId          | actor           |
+      | plot-yarada-001 | usr-farmer-0042 |
