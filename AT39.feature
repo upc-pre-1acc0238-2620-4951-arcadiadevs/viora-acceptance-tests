@@ -44,3 +44,23 @@ Feature: Formal harvest settlement and season-end delivery balance (Harvest)
     Examples:
       | plotId            | campaignYear |
       | plot-jeronomo-001 | 2024         |
+
+  # Escenario 5: Parcela de otro productor (HTTP 403 Forbidden)
+  Scenario Outline: Plot of another producer
+    Given a POST request to "/api/v1/plots/<plotId>/harvest-settlements" sent by "<actor>" for a plot that does not belong to the requester
+    When the API checks the ownership
+    Then the response status is 403
+
+    Examples:
+      | plotId          | actor           |
+      | plot-yarada-001 | usr-farmer-0042 |
+
+  # Escenario 6: Clave de idempotencia reutilizada (HTTP 422 Unprocessable Entity)
+  Scenario Outline: Reused idempotency key
+    Given a POST request to "/api/v1/plots/<plotId>/harvest-settlements" sent by "<actor>" with an Idempotency-Key header already used for another plot or campaign
+    When the API evaluates the key
+    Then the response status is 422
+
+    Examples:
+      | plotId          | actor           |
+      | plot-yarada-001 | usr-farmer-0042 |
