@@ -45,3 +45,13 @@ Feature: Plot update and boundary rectification with optimistic locking (Orchard
     Examples:
       | plotId                |
       | plot-non-existent-999 |
+
+  # Escenario 5: Nombre duplicado (HTTP 409 Conflict)
+  Scenario Outline: Duplicated name
+    Given a PUT request to "/api/v1/plots/<plotId>" sent by "<actor>" with a name already used by another plot of the producer
+    When the API validates the name uniqueness
+    Then the response status is 409
+
+    Examples:
+      | plotId          | actor           |
+      | plot-yarada-001 | usr-farmer-0042 |
