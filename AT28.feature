@@ -1,39 +1,46 @@
-Feature: Provisional and final agronomic dossier generation and export in PDF and JSON (Harvest)
+Feature: Final agronomic dossier query and export (Harvest)
   As a Client Application Developer
-  I want to request the agronomic dossier of a plot via GET to /api/v1/cooperatives/{cooperativeId}/plots/{plotId}/technical-dossier (or /api/v1/plots/{plotId}/agronomic-dossier) with content negotiation (Accept: application/pdf or application/json) and campaignYear parameter
-  so I can download the provisional technical document in an active campaign or the dossier sealed with SHA-256 hash in a closed campaign
+  I want to request the sealed dossier of a plot campaign with content negotiation via GET to /api/v1/plots/{plotId}/agronomic-dossiers/{campaignYear}
+  so I can download the sealed dossier with its SHA-256 fingerprint
 
-  # Escenario 1: Descarga de expediente binario PDF en campaña activa como instantánea provisional
-  Scenario Outline: Binary PDF dossier download in active campaign as provisional snapshot
-    Given a GET request to "<endpoint>?campaignYear=<campaignYear>" with header "Accept: application/pdf", an ongoing campaign and an authorized token
-    When the engine compiles available flowering, fruit set, telemetry and thinning data recorded up to the cut-off date
+  # Scenario 1: Sealed dossier download as PDF
+  Scenario Outline: Sealed dossier download as PDF
+    Given a GET request to "/api/v1/plots/<plotId>/agronomic-dossiers/<campaignYear>" sent by "<actor>" with Accept application/pdf for a campaign with a sealed dossier
+    When the API retrieves the sealed dossier
     Then the response status is 200
-    And the response has "Content-Type: application/pdf" and a "Content-Disposition" header for download
-    And the document is visibly labeled "Expediente Agronómico Provisional" marking fields without data as not available and without cryptographic seals
+    And the response content type is application/pdf
 
     Examples:
-      | endpoint                                                                          | campaignYear |
-      | /api/v1/cooperatives/coop-valle-sama-01/plots/plot-jeronomo-001/technical-dossier | 2026         |
-      | /api/v1/plots/plot-jeronomo-001/agronomic-dossier                                 | 2026         |
+      | plotId          | campaignYear | actor           |
+      | plot-yarada-001 | 2026         | usr-farmer-0042 |
 
-  # Escenario 2: Consulta de expediente consolidado y metadatos con hash en campaña cerrada
-  Scenario Outline: Consolidated dossier and hash metadata query in closed campaign
-    Given a GET request to "/api/v1/cooperatives/<cooperativeId>/plots/<plotId>/technical-dossier?campaignYear=<campaignYear>" with header "Accept: application/json" for a concluded and formally settled campaign
-    When the API retrieves the final sealed dossier aggregate
+  # Scenario 2: Consolidated dossier and hash metadata of a closed campaign
+  Scenario Outline: Consolidated dossier and hash metadata of a closed campaign
+    Given a GET request to "/api/v1/plots/<plotId>/agronomic-dossiers/<campaignYear>" sent by "<actor>" with Accept application/json for a settled campaign
+    When the API retrieves the sealed dossier
     Then the response status is 200
-    And the response returns "TechnicalDossierResource" with yield summary, stabilization balance and SHA-256 document integrity fingerprint
+    And the response returns the yield summary, stabilization balance and SHA-256 fingerprint
 
     Examples:
-      | cooperativeId      | plotId            | campaignYear |
-      | coop-valle-sama-01 | plot-jeronomo-001 | 2025         |
+      | plotId          | campaignYear | actor           |
+      | plot-yarada-001 | 2026         | usr-farmer-0042 |
 
-  # Escenario 3: Acceso no autorizado a expediente de parcela ajena
-  Scenario Outline: Unauthorized access to another owner's plot dossier
-    Given a GET request to "/api/v1/cooperatives/<cooperativeId>/plots/<plotId>/technical-dossier" issued by a user with role "<requesterRole>" without technical supervision permissions or ownership of the plot
-    When the institutional access policy evaluates the plot membership
+  # Scenario 3: Unauthorized access to another producer dossier
+  Scenario Outline: Unauthorized access to another producer dossier
+    Given a GET request to "/api/v1/plots/<plotId>/agronomic-dossiers/<campaignYear>" sent by "<actor>" for a plot the user does not own or supervise
+    When the API checks the access
     Then the response status is 403
-    And the farmer agronomic data remains protected
 
     Examples:
-      | cooperativeId      | plotId            | requesterRole  |
-      | coop-valle-sama-01 | plot-jeronomo-001 | ROLE_PRODUCTOR |
+      | plotId          | campaignYear | actor           |
+      | plot-yarada-001 | 2026         | usr-farmer-0042 |
+
+  # Scenario 4: Campaign without sealed dossier
+  Scenario Outline: Campaign without sealed dossier
+    Given a GET request to "/api/v1/plots/<plotId>/agronomic-dossiers/<campaignYear>" sent by "<actor>" for a campaign without a sealed dossier
+    When the API searches the dossier
+    Then the response status is 404
+
+    Examples:
+      | plotId          | campaignYear | actor           |
+      | plot-yarada-001 | 2026         | usr-farmer-0042 |

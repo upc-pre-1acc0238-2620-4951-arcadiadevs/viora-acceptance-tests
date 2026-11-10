@@ -1,37 +1,35 @@
-Feature: Internal territorial agroclimatic and phytosanitary alerts query and subscription (Cooperative)
+Feature: Sector agroclimatic alerts query (Cooperative)
   As a Client Application Developer
-  I want to request the cooperative internal agroclimatic and phenological alerts via GET to /api/v1/cooperatives/{cooperativeId}/territorial-alerts (with status and age filters)
-  so I can display in the manager notification center the frost, water stress and fruit overload alerts of their sectors
+  I want to list the alerts of the license sectors via GET to /api/v1/sector-alerts
+  so I can show frost, water stress and overload alerts to the manager
 
-  # Escenario 1: Listado de alertas territoriales activas y recientes
-  Scenario Outline: Active and recent territorial alerts listing
-    Given a GET request to "/api/v1/cooperatives/<cooperativeId>/territorial-alerts?status=<status>&normalizedSince=<normalizedSince>" authorized with a ROLE_TECHNICAL_MANAGER token
-    When the API retrieves the risk events processed for member plots and valley agroclimatic stations
+  # Scenario 1: Active and recent territorial alerts list
+  Scenario Outline: Active and recent territorial alerts list
+    Given a GET request to "/api/v1/sector-alerts" sent by "<actor>" from a technical manager with a license in force
+    When the API reads the alerts of the sectors
     Then the response status is 200
-    And the response returns "TerritorialAlertListResource" with an array of alerts containing alertId, type (FROST_WARNING, CRITICAL_OVERLOAD, WATER_STRESS), sectorId, sectorName, severity, issue date and number of affected plots
+    And the response returns the type, sector, severity and affected plots
 
     Examples:
-      | cooperativeId      | status | normalizedSince      |
-      | coop-valle-sama-01 | ACTIVE | 2026-11-01T00:00:00Z |
+      | actor            |
+      | usr-manager-0007 |
 
-  # Escenario 2: Persistencia del aviso para el gestor independiente del estado silenciado del productor
-  Scenario Outline: Alert persists for the manager regardless of farmer snooze state
-    Given a "<alertType>" alert on member plot "<plotId>" whose farmer enabled the SNOOZE option in their mobile application
-    When the technical manager queries "/api/v1/cooperatives/<cooperativeId>/territorial-alerts"
-    Then the response status is 200
-    And the response includes the active alert ensuring the member local preferences do not hide the risk status from technical supervision
+  # Scenario 2: Alert kept for the manager regardless of the producer snooze
+  Scenario Outline: Alert kept for the manager regardless of the producer snooze
+    Given a GET request to "/api/v1/sector-alerts" sent by "<actor>" for an overload alert snoozed by the producer
+    When the technical manager queries the sector alerts
+    Then the alert stays visible for the manager
 
     Examples:
-      | cooperativeId      | plotId            | alertType         |
-      | coop-valle-sama-01 | plot-jeronomo-001 | CRITICAL_OVERLOAD |
+      | actor            |
+      | usr-manager-0007 |
 
-  # Escenario 3: Denegación de acceso para solicitantes ajenos a la organización
-  Scenario Outline: Access denied to requesters outside the organization
-    Given a GET request to "/api/v1/cooperatives/<cooperativeId>/territorial-alerts" issued by a user with role "<requesterRole>" without link to the cooperative
-    When the requester identity is evaluated
+  # Scenario 3: Access denied to users outside the organization
+  Scenario Outline: Access denied to users outside the organization
+    Given a GET request to "/api/v1/sector-alerts" sent by "<actor>" from a user without a link to the cooperative
+    When the API checks the access
     Then the response status is 403
 
     Examples:
-      | cooperativeId      | requesterRole                     |
-      | coop-valle-sama-01 | ROLE_PRODUCTOR                    |
-      | coop-valle-sama-01 | ROLE_TECHNICAL_MANAGER_OTHER_COOP |
+      | actor           |
+      | usr-farmer-0042 |

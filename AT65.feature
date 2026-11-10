@@ -1,38 +1,66 @@
-Feature: Aggregated varietal distribution and commercial aptitude of projected harvest by sector query (Cooperative)
+Feature: Cooperative invitation code preview (Membership)
   As a Client Application Developer
-  I want to query the intake projection breakdown by olive variety and commercial aptitude via GET to /api/v1/cooperatives/{cooperativeId}/intake-forecasts/varieties with campaignYear parameter and optional sectorId filter
-  so I can plan oil mill reception distinguishing table olives (Criolla, Manzanilla) from oil olives
+  I want to preview what an invitation code offers via POST to /api/v1/cooperative-code-previews
+  so I can show the conditions and the consent text before redeeming it
 
-  # Escenario 1: Desglose varietal y comercial de volumen proyectado
-  Scenario Outline: Varietal and commercial breakdown of projected volume
-    Given a GET request to "/api/v1/cooperatives/<cooperativeId>/intake-forecasts/varieties?campaignYear=<campaignYear>&sectorId=<sectorId>" with a technical manager token
-    When the API consolidates estimable plot production grouped by agronomic variety (e.g., Criolla de Tacna, Sevillana, Manzanilla) and expected commercial destination
+  # Scenario 1: Successful preview
+  Scenario Outline: Successful preview
+    Given a POST request to "/api/v1/cooperative-code-previews" sent by "<actor>" with a valid code
+    When the API evaluates the code without consuming it
     Then the response status is 200
-    And the response returns "VarietyForecastListResource" with an array of varieties containing varietyName, aptitude (TABLE_OLIVE, OIL_OLIVE), estimatedTons, percentageOfTotal and the untyped volume labeled "UNCLASSIFIED"
+    And the response returns the organization, manager, quota, plan end and consent version
 
     Examples:
-      | cooperativeId      | campaignYear | sectorId       |
-      | coop-valle-sama-01 | 2026         |                |
-      | coop-valle-sama-01 | 2026         | sector-sama-01 |
+      | actor           |
+      | usr-farmer-0042 |
 
-  # Escenario 2: Sector sin parcelas con datos estimables suficientes
-  Scenario Outline: Sector without plots with sufficient estimable data
-    Given a sector "<sectorId>" where member plots have no validated flowering or fruit set data yet
-    When the API computes the sector varietal distribution for campaignYear <campaignYear>
-    Then the response status is 200
-    And the response returns an empty varietal array and status "NO_DATA" indicating there is no numerical basis to generate the breakdown
+  # Scenario 2: Code that cannot be used
+  Scenario Outline: Code that cannot be used
+    Given a POST request to "/api/v1/cooperative-code-previews" sent by "<actor>" with an unknown, expired, redeemed or revoked code
+    When the API evaluates the code
+    Then the response status is 400
 
     Examples:
-      | cooperativeId      | campaignYear | sectorId       |
-      | coop-valle-sama-01 | 2026         | sector-sama-07 |
+      | actor           |
+      | usr-farmer-0042 |
 
-  # Escenario 3: Acceso denegado a usuarios externos a la organización
-  Scenario Outline: Access denied to users outside the organization
-    Given a GET request to "/api/v1/cooperatives/<cooperativeId>/intake-forecasts/varieties" issued by a user with role "<requesterRole>" not belonging to the cooperative technical team
-    When the institutional authorization is evaluated
+  # Scenario 3: Producer with an active subscription
+  Scenario Outline: Producer with an active subscription
+    Given a POST request to "/api/v1/cooperative-code-previews" sent by "<actor>" from a producer who already has an active subscription
+    When the API checks the subscription
+    Then the response status is 409
+
+    Examples:
+      | actor           |
+      | usr-farmer-0042 |
+
+  # Scenario 4: Request without authentication
+  Scenario Outline: Request without authentication
+    Given a POST request to "/api/v1/cooperative-code-previews" sent by "<actor>" without a valid access token
+    When the API checks the identity
+    Then the response status is 401
+
+    Examples:
+      | actor            |
+      | anonymous-client |
+
+  # Scenario 5: User without the producer role
+  Scenario Outline: User without the producer role
+    Given a POST request to "/api/v1/cooperative-code-previews" sent by "<actor>" from a user who is not a producer
+    When the API checks the role
     Then the response status is 403
 
     Examples:
-      | cooperativeId      | requesterRole                     |
-      | coop-valle-sama-01 | ROLE_PRODUCTOR                    |
-      | coop-valle-sama-01 | ROLE_TECHNICAL_MANAGER_OTHER_COOP |
+      | actor            |
+      | usr-manager-0007 |
+
+  # Scenario 6: Too many failed attempts
+  Scenario Outline: Too many failed attempts
+    Given a POST request to "/api/v1/cooperative-code-previews" sent by "<actor>" after too many failed attempts
+    When the API applies the attempt limit
+    Then the response status is 429
+    And the response includes the Retry-After header
+
+    Examples:
+      | actor           |
+      | usr-farmer-0042 |

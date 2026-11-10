@@ -1,37 +1,36 @@
 Feature: Territorial risk matrix and sector traffic light query with GPS positioning (Cooperative)
   As a Client Application Developer
-  I want to request the consolidated territorial status of member plots via GET to /api/v1/cooperatives/{cooperativeId}/territorial-risk with optional geolocation parameters (latitude, longitude) and campaignYear
-  so I can present the traffic light by highest observed severity and guide the manager in the field
+  I want to list the member plots with optional latitude and longitude via GET to /api/v1/member-plots
+  so I can show the traffic light of each sector and guide the manager in the field
 
-  # Escenario 1: Consulta exitosa de matriz territorial con ubicación del gestor
-  Scenario Outline: Successful territorial matrix query with manager location
-    Given a GET request to "/api/v1/cooperatives/<cooperativeId>/territorial-risk?latitude=<latitude>&longitude=<longitude>&campaignYear=<campaignYear>" authorized with a ROLE_TECHNICAL_MANAGER token
-    When the API locates the manager on the map and evaluates fruit overload (> 30%) and radiative frost risk (<= 1.5 °C) states in linked plots
+  # Scenario 1: Successful territorial matrix with manager location
+  Scenario Outline: Successful territorial matrix with manager location
+    Given a GET request to "/api/v1/member-plots?latitude=<latitude>&longitude=<longitude>" sent by "<actor>" with latitude and longitude of the manager
+    When the API groups the member plots by sector and locates the manager
     Then the response status is 200
-    And the response returns "TerritorialRiskResource" with sectors with editable labels, member plot coordinates, the sector detected by GPS proximity and the consolidated traffic light by highest observed severity (critical, moderate, optimal and independent NO_DATA count)
+    And the response returns the sectors, plots and detected sector
 
     Examples:
-      | cooperativeId      | latitude | longitude | campaignYear | expectedSector |
-      | coop-valle-sama-01 | -17.9306 | -70.5112  | 2026         | sector-sama-01 |
+      | latitude | longitude | actor            |
+      | -18.0123 | -70.2456  | usr-manager-0007 |
 
-  # Escenario 2: Consulta territorial global sin coordenadas GPS
+  # Scenario 2: Global territorial query without GPS coordinates
   Scenario Outline: Global territorial query without GPS coordinates
-    Given a GET request to "/api/v1/cooperatives/<cooperativeId>/territorial-risk?campaignYear=<campaignYear>" without latitude and longitude parameters issued by a manager with GPS disabled
-    When the API processes the query for the organization
+    Given a GET request to "/api/v1/member-plots?latitude=<latitude>&longitude=<longitude>" sent by "<actor>" without coordinates
+    When the API groups the member plots by sector
     Then the response status is 200
-    And the response returns the general map and the macro traffic light of all sectors with locationStatus "GLOBAL"
+    And the response returns the general map of every sector
 
     Examples:
-      | cooperativeId      | campaignYear |
-      | coop-valle-sama-01 | 2026         |
+      | latitude | longitude | actor            |
+      | -18.0123 | -70.2456  | usr-manager-0007 |
 
-  # Escenario 3: Rechazo por falta de credenciales de gestor técnico
-  Scenario Outline: Rejection due to missing technical manager credentials
-    Given a GET request to "/api/v1/cooperatives/<cooperativeId>/territorial-risk" issued by a user with role "<requesterRole>" not belonging to the cooperative technical team
-    When the requester authorization is evaluated
+  # Scenario 3: Rejection without technical manager credentials
+  Scenario Outline: Rejection without technical manager credentials
+    Given a GET request to "/api/v1/member-plots?latitude=<latitude>&longitude=<longitude>" sent by "<actor>" from a user outside the cooperative technical team
+    When the API checks the role
     Then the response status is 403
 
     Examples:
-      | cooperativeId      | requesterRole                     |
-      | coop-valle-sama-01 | ROLE_PRODUCTOR                    |
-      | coop-valle-sama-01 | ROLE_TECHNICAL_MANAGER_OTHER_COOP |
+      | latitude | longitude | actor           |
+      | -18.0123 | -70.2456  | usr-farmer-0042 |

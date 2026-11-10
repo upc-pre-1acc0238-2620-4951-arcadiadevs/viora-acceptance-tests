@@ -1,41 +1,35 @@
-Feature: Cooperative activation code batch inventory query and audit (Membership)
+Feature: Cooperative activation code inventory query and audit (Membership)
   As a Client Application Developer
-  I want to request the paginated inventory of activation code batches via GET to /api/v1/cooperatives/{cooperativeId}/invitation-code-batches with status filters and protected recoverable storage
-  so I can let the manager audit invitations and copy or share available codes
+  I want to list the activation codes of the license with an optional status filter via GET to /api/v1/invitation-codes
+  so I can audit the invitations and copy or share the available codes
 
-  # Escenario 1: Consulta paginada y agrupada de códigos de activación
-  Scenario Outline: Paginated and grouped activation code query
-    Given a GET request to "/api/v1/cooperatives/<cooperativeId>/invitation-code-batches" with optional parameters "?status=<status>&page=<page>&size=<size>" authorized with a ROLE_TECHNICAL_MANAGER token
-    When the API queries the codes repository and computes the cooperative global totals
+  # Scenario 1: Activation code query
+  Scenario Outline: Activation code query
+    Given a GET request to "/api/v1/invitation-codes?status=<status>" sent by "<actor>" with an optional status filter
+    When the API reads the codes of the manager license
     Then the response status is 200
-    And the response returns "PagedInvitationCodeBatchResource" with paginated batches, readable codes for AVAILABLE status, expiresAt, issue date and institutional balance summary
+    And the response returns the codes with their status, expiry and balance
 
     Examples:
-      | cooperativeId      | status    | page | size |
-      | coop-valle-sama-01 | AVAILABLE | 0    | 20   |
-      | coop-valle-sama-01 | REDEEMED  | 0    | 20   |
-      | coop-valle-sama-01 | EXPIRED   | 1    | 10   |
-      | coop-valle-sama-01 | REVOKED   | 0    | 10   |
+      | status    | actor            |
+      | available | usr-manager-0007 |
 
-  # Escenario 2: Recuperación de código utilizable protegido
-  Scenario Outline: Protected usable code retrieval
-    Given a generated code "<codeId>" in AVAILABLE status within its validity period
-    When the authorized technical manager requests its detail to share it from the mobile application
-    Then the response status is 200
-    And the response returns the usable representation of the code allowing clipboard copy without exposing system secrets
+  # Scenario 2: Protected recovery of a usable code
+  Scenario Outline: Protected recovery of a usable code
+    Given a GET request to "/api/v1/invitation-codes?status=<status>" sent by "<actor>" for a code AVAILABLE within its validity period
+    When the API builds the code representation
+    Then the usable code is returned without exposing system secrets
 
     Examples:
-      | cooperativeId      | codeId       |
-      | coop-valle-sama-01 | code-0001-av |
+      | status    | actor            |
+      | available | usr-manager-0007 |
 
-  # Escenario 3: Acceso denegado a usuarios externos o sin privilegios de gestión
-  Scenario Outline: Access denied to external users or users without management privileges
-    Given a GET request to "/api/v1/cooperatives/<cooperativeId>/invitation-code-batches" sent by an account not associated with the cooperative in the route
-    When the service checks the authorization scope
+  # Scenario 3: Access denied to users without management privileges
+  Scenario Outline: Access denied to users without management privileges
+    Given a GET request to "/api/v1/invitation-codes?status=<status>" sent by "<actor>" from a user without the technical manager role
+    When the API checks the role
     Then the response status is 403
-    And the institutional codes remain confidential
 
     Examples:
-      | cooperativeId      | requesterRole                     |
-      | coop-valle-sama-01 | ROLE_PRODUCTOR                    |
-      | coop-valle-sama-01 | ROLE_TECHNICAL_MANAGER_OTHER_COOP |
+      | status    | actor           |
+      | available | usr-farmer-0042 |

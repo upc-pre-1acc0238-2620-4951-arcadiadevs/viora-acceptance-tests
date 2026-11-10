@@ -1,37 +1,35 @@
-Feature: Provisional agronomic dossier snapshot and metadata generation in active campaign (Harvest)
+Feature: Provisional agronomic dossier snapshot of an active campaign (Harvest)
   As a Client Application Developer
-  I want to request a dated snapshot of the agronomic dossier in an open campaign via GET to /api/v1/cooperatives/{cooperativeId}/plots/{plotId}/technical-dossier with parameter provisional=true
-  so I can issue a preliminary document with observed facts and cut-off date without premature cryptographic seals
+  I want to request the provisional dossier of a member plot via GET to /api/v1/member-plots/{id}/provisional-dossier
+  so I can issue a preliminary document with a cut-off date and no premature seals
 
-  # Escenario 1: Generación de metadatos de instantánea técnica provisional
-  Scenario Outline: Provisional technical snapshot metadata generation
-    Given a GET request to "/api/v1/cooperatives/<cooperativeId>/plots/<plotId>/technical-dossier?provisional=true" with header "Accept: application/json" on a plot whose current campaign <campaignYear> has not been settled
-    When the documentation service compiles the recorded evidence (phenological data, recorded thinnings and weather series up to the query instant)
+  # Scenario 1: Provisional technical snapshot metadata
+  Scenario Outline: Provisional technical snapshot metadata
+    Given a GET request to "/api/v1/member-plots/<id>/provisional-dossier" sent by "<actor>" with Accept application/json for a plot whose campaign is not settled
+    When the API gathers the recorded evidence up to now
     Then the response status is 200
-    And the response returns "ProvisionalDossierResource" with cutOffTimestamp, campaignYear, summary of performed interventions, explicit label documentType "PROVISIONAL" and fields without recorded data labeled "NOT_AVAILABLE"
+    And the response returns a PROVISIONAL document with its cut-off timestamp
 
     Examples:
-      | cooperativeId      | plotId            | campaignYear |
-      | coop-valle-sama-01 | plot-jeronomo-001 | 2026         |
+      | id                                   | actor            |
+      | 3f6b2c1e-9a4d-4e8b-b1c2-7d5e6f8a9b01 | usr-manager-0007 |
 
-  # Escenario 2: Solicitud de PDF provisional con marca de corte temporal
-  Scenario Outline: Provisional PDF request with cut-off timestamp mark
-    Given a GET request to "/api/v1/cooperatives/<cooperativeId>/plots/<plotId>/technical-dossier?provisional=true" with header "Accept: application/pdf"
-    When the rendering engine processes the document template
-    Then the response status is 200
-    And the API delivers the PDF file with watermark and header "Expediente Provisional - Fecha de corte"
-    And the document omits any external certification claim or final SHA-256 hash
+  # Scenario 2: Provisional PDF with cut-off mark
+  Scenario Outline: Provisional PDF with cut-off mark
+    Given a GET request to "/api/v1/member-plots/<id>/provisional-dossier" sent by "<actor>" with Accept application/pdf
+    When the API renders the provisional document
+    Then the PDF has no certification or final SHA-256 fingerprint
 
     Examples:
-      | cooperativeId      | plotId            |
-      | coop-valle-sama-01 | plot-jeronomo-001 |
+      | id                                   | actor            |
+      | 3f6b2c1e-9a4d-4e8b-b1c2-7d5e6f8a9b01 | usr-manager-0007 |
 
-  # Escenario 3: Acceso no autorizado
+  # Scenario 3: Unauthorized access
   Scenario Outline: Unauthorized access
-    Given a GET request to "/api/v1/cooperatives/<cooperativeId>/plots/<plotId>/technical-dossier?provisional=true" on a plot outside the cooperative portfolio
-    When the security policy verifies access rights
+    Given a GET request to "/api/v1/member-plots/<id>/provisional-dossier" sent by "<actor>" for a plot outside the cooperative portfolio
+    When the API checks the access
     Then the response status is 403
 
     Examples:
-      | cooperativeId      | plotId          |
-      | coop-valle-sama-01 | plot-ajena-0777 |
+      | id                                   | actor            |
+      | 3f6b2c1e-9a4d-4e8b-b1c2-7d5e6f8a9b01 | usr-manager-0007 |

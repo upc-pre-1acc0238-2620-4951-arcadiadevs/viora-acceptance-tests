@@ -1,38 +1,35 @@
-Feature: Cooperative campaign history and annual production consolidation query (Cooperative)
+Feature: Intake history query by campaign (Cooperative)
   As a Client Application Developer
-  I want to request the cooperative agricultural campaign catalog via GET to /api/v1/cooperatives/{cooperativeId}/campaigns
-  so I can query the registered years, their status (OPEN/CLOSED), the bearing year classification (ON/OFF) and the consolidated historical intake balances
+  I want to list the intake of each campaign via GET to /api/v1/intake-forecasts
+  so I can compare the campaign in progress with the settled harvests of previous campaigns
 
-  # Escenario 1: Consulta del catálogo de campañas y comportamiento productivo histórico
-  Scenario Outline: Campaign catalog and historical productive behavior query
-    Given a GET request to "/api/v1/cooperatives/<cooperativeId>/campaigns" authorized with a technical manager token
-    When the API retrieves the cooperative historical campaign series preserving the temporal scope of linked members in each period
+  # Scenario 1: Intake by campaign query
+  Scenario Outline: Intake by campaign query
+    Given a GET request to "/api/v1/intake-forecasts" sent by "<actor>" from a technical manager with a license in force
+    When the API projects the campaign in progress and adds the settled harvests of past campaigns
     Then the response status is 200
-    And the response returns "CooperativeCampaignListResource" with campaigns detailing campaignYear, status (OPEN or CLOSED), alternation classification (ON, OFF or UNKNOWN), total settled tons and number of computed plots
+    And the response returns the intake of each campaign
 
     Examples:
-      | cooperativeId      | campaignYear | status | alternation | totalSettledTons |
-      | coop-valle-sama-01 | 2026         | OPEN   | UNKNOWN     | 0.0              |
-      | coop-valle-sama-01 | 2025         | CLOSED | ON          | 412.5            |
-      | coop-valle-sama-01 | 2024         | CLOSED | OFF         | 198.3            |
+      | actor            |
+      | usr-manager-0007 |
 
-  # Escenario 2: Respeto al principio de no reescritura histórica por afiliaciones recientes
-  Scenario Outline: No historical rewriting due to recent affiliations
-    Given a farmer "<memberId>" who joined the cooperative in the current year <currentYear>
-    When the technical manager queries the intake consolidations of closed campaign <closedCampaignYear>
-    Then the response status is 200
-    And the response exposes the immutable historical figures <totalSettledTons> without retroactively recalculating past totals with the current member roster
+  # Scenario 2: Request without authentication
+  Scenario Outline: Request without authentication
+    Given a GET request to "/api/v1/intake-forecasts" sent by "<actor>" without a valid access token
+    When the API checks the identity
+    Then the response status is 401
 
     Examples:
-      | cooperativeId      | memberId        | currentYear | closedCampaignYear | totalSettledTons |
-      | coop-valle-sama-01 | usr-farmer-0150 | 2026        | 2025               | 412.5            |
+      | actor            |
+      | anonymous-client |
 
-  # Escenario 3: Acceso no autorizado para cuentas no gestoras
-  Scenario Outline: Unauthorized access for non-manager accounts
-    Given a GET request to "/api/v1/cooperatives/<cooperativeId>/campaigns" issued by a user with role "<requesterRole>" without institutional privileges in the entity
-    When the API evaluates permissions
+  # Scenario 3: Manager without a license in force
+  Scenario Outline: Manager without a license in force
+    Given a GET request to "/api/v1/intake-forecasts" sent by "<actor>" from a user who is not a manager with a license in force
+    When the API checks the access
     Then the response status is 403
 
     Examples:
-      | cooperativeId      | requesterRole  |
-      | coop-valle-sama-01 | ROLE_PRODUCTOR |
+      | actor           |
+      | usr-farmer-0042 |

@@ -1,40 +1,65 @@
-Feature: Corporate invitation code delivery and sharing registration and traceability (Membership)
+Feature: Manager master code redemption for technical manager activation (Membership)
   As a Client Application Developer
-  I want to register the action of sharing or preliminarily assigning an activation code via POST to /api/v1/cooperatives/{cooperativeId}/invitation-codes/{codeId}/shares with optional recipient metadata
-  so I can keep the invitation delivery log in the management interface
+  I want to redeem the activation code of the manager via POST to /api/v1/manager-code-redemptions
+  so I can put the authenticated technical manager in charge of the license
 
-  # Escenario 1: Registro exitoso de compartición de código de activación
-  Scenario Outline: Successful activation code sharing registration
-    Given a POST request to "/api/v1/cooperatives/<cooperativeId>/invitation-codes/<codeId>/shares" with body containing sharedVia "<sharedVia>" and optional label intendedRecipientName "<intendedRecipientName>" authorized with a manager token
-    When the API validates the code is in AVAILABLE status and belongs to the cooperative
-    Then the response status is 200
-    And the response returns "CodeShareResource" with delivery timestamp and annotation status in the internal log
+  # Scenario 1: Successful master code redemption
+  Scenario Outline: Successful master code redemption
+    Given a POST request to "/api/v1/manager-code-redemptions" sent by "<actor>" with a valid code
+    When the API consumes the code and assigns the license to the manager
+    Then the response status is 201
 
     Examples:
-      | cooperativeId      | codeId       | sharedVia | intendedRecipientName |
-      | coop-valle-sama-01 | code-0001-av | WHATSAPP  | Rosa Mamani           |
-      | coop-valle-sama-01 | code-0001-av | SMS       |                       |
-      | coop-valle-sama-01 | code-0001-av | CLIPBOARD |                       |
+      | actor            |
+      | usr-manager-0007 |
 
-  # Escenario 2: Intento de registro sobre código ya canjeado o inactivo
-  Scenario Outline: Registration attempt on an already redeemed or inactive code
-    Given a POST request to "/api/v1/cooperatives/<cooperativeId>/invitation-codes/<codeId>/shares" for a code in status "<codeStatus>"
-    When the API checks the code lifecycle status
+  # Scenario 2: Code that cannot be redeemed
+  Scenario Outline: Code that cannot be redeemed
+    Given a POST request to "/api/v1/manager-code-redemptions" sent by "<actor>" with an unknown, expired, used or revoked code
+    When the API processes the redemption
+    Then the response status is 400
+
+    Examples:
+      | actor            |
+      | usr-manager-0007 |
+
+  # Scenario 3: Manager with a license in force
+  Scenario Outline: Manager with a license in force
+    Given a POST request to "/api/v1/manager-code-redemptions" sent by "<actor>" from a manager already in charge of a license in force
+    When the API checks the manager licenses
     Then the response status is 409
-    And the response follows RFC 7807 preventing delivery registration of unusable codes
 
     Examples:
-      | cooperativeId      | codeId       | codeStatus |
-      | coop-valle-sama-01 | code-0002-rd | REDEEMED   |
-      | coop-valle-sama-01 | code-0004-ex | EXPIRED    |
-      | coop-valle-sama-01 | code-0003-rv | REVOKED    |
+      | actor            |
+      | usr-manager-0007 |
 
-  # Escenario 3: Acceso no autorizado
-  Scenario Outline: Unauthorized access
-    Given a POST request to "/api/v1/cooperatives/<cooperativeId>/invitation-codes/<codeId>/shares" sent by a user with role "<requesterRole>" without technical manager role in the cooperative
-    When the service evaluates the credentials
+  # Scenario 4: Request without authentication
+  Scenario Outline: Request without authentication
+    Given a POST request to "/api/v1/manager-code-redemptions" sent by "<actor>" without a valid access token
+    When the API checks the identity
+    Then the response status is 401
+
+    Examples:
+      | actor            |
+      | anonymous-client |
+
+  # Scenario 5: User without the technical manager role
+  Scenario Outline: User without the technical manager role
+    Given a POST request to "/api/v1/manager-code-redemptions" sent by "<actor>" from a user who is not a technical manager
+    When the API checks the role
     Then the response status is 403
 
     Examples:
-      | cooperativeId      | codeId       | requesterRole  |
-      | coop-valle-sama-01 | code-0001-av | ROLE_PRODUCTOR |
+      | actor           |
+      | usr-farmer-0042 |
+
+  # Scenario 6: Too many failed attempts
+  Scenario Outline: Too many failed attempts
+    Given a POST request to "/api/v1/manager-code-redemptions" sent by "<actor>" after too many failed attempts
+    When the API applies the attempt limit
+    Then the response status is 429
+    And the response includes the Retry-After header
+
+    Examples:
+      | actor            |
+      | usr-manager-0007 |
