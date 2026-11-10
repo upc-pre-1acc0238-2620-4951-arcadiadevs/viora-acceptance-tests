@@ -7,7 +7,7 @@ Feature: Atomic institutional activation code redemption with quota and consent 
   Scenario Outline: Successful redemption, quota validation and 1:N linking
     Given a POST request to "/api/v1/cooperative-code-redemptions" with body containing invitationCode "<invitationCode>" and shareDataConsent <shareDataConsent> issued by an authenticated olive farmer
     When the API validates the code exists, is AVAILABLE, has not expired and the cooperative has hectare quota for the member surface
-    Then the response status is 200
+    Then the response status is 201
     And the response returns "CooperativeCodeRedemptionResource" with affiliation confirmation, cooperative name and active sponsored membership status
     And the code transitions to REDEEMED, "CooperativeCodeRedeemedEvent" is emitted and the farmer is linked to the technical manager roster
 
@@ -19,7 +19,7 @@ Feature: Atomic institutional activation code redemption with quota and consent 
   Scenario Outline: Invalid, expired or revoked code
     Given a POST request to "/api/v1/cooperative-code-redemptions" with invitationCode "<invitationCode>" in status "<codeStatus>"
     When the service processes the redemption transaction
-    Then the response status is 409
+    Then the response status is 400
     And the response follows RFC 7807 indicating the rejection reason without altering the user state
 
     Examples:
@@ -39,3 +39,24 @@ Feature: Atomic institutional activation code redemption with quota and consent 
     Examples:
       | userId          | invitationCode |
       | usr-farmer-0042 | COOP-9QW3      |
+
+  # Escenario 4: Usuario sin rol de productor
+  Scenario Outline: User without the producer role
+    Given a POST request to "/api/v1/cooperative-code-redemptions" sent by "<actor>" from a user who is not a producer
+    When the API checks the role
+    Then the response status is 403
+
+    Examples:
+      | actor            |
+      | usr-manager-0007 |
+
+  # Escenario 5: Exceso de intentos fallidos
+  Scenario Outline: Too many failed attempts
+    Given a POST request to "/api/v1/cooperative-code-redemptions" sent by "<actor>" after too many failed redemption attempts
+    When the API applies the attempt limit
+    Then the response status is 429
+    And the response includes the Retry-After header
+
+    Examples:
+      | actor           |
+      | usr-farmer-0042 |
