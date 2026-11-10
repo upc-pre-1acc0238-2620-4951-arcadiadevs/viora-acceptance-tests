@@ -1,36 +1,45 @@
 Feature: Institutional license balance and corporate quota query (Membership)
   As a Client Application Developer
-  I want to query the full corporate license balance via GET to /api/v1/cooperatives/{cooperativeId}/license
-  so I can display the breakdown of contracted, reserved, occupied and available seats and hectares of the cooperative
+  I want to query a license of the technical manager via GET to /api/v1/cooperative-licenses/{id}
+  so I can show the balance of seats and hectares of the cooperative
 
-  # Escenario 1: Consulta exitosa de capacidad y saldos de licencia institucional
-  Scenario Outline: Successful institutional license capacity and balance query
-    Given a GET request to "/api/v1/cooperatives/<cooperativeId>/license" with an authorized ROLE_TECHNICAL_MANAGER token
-    When the API retrieves the cooperative active subscription and computes seat and hectare balances
+  # Escenario 1: Consulta exitosa de la licencia
+  Scenario Outline: Successful license query
+    Given a GET request to "/api/v1/cooperative-licenses/<id>" sent by "<actor>" for a license in charge of the manager
+    When the API reads the license
     Then the response status is 200
-    And the response returns "CooperativeLicenseResource" with licenseId, planName, totalSeats, occupiedSeats, reservedSeats, availableSeats, totalHectares, committedHectares, availableHectares, startDate and expiresAt
+    And the response returns the license and its balance
 
     Examples:
-      | cooperativeId      | totalSeats | occupiedSeats | reservedSeats | availableSeats | totalHectares | committedHectares | availableHectares |
-      | coop-valle-sama-01 | 100        | 48            | 10            | 42             | 500.0         | 290.0             | 210.0             |
+      | id                                   | actor            |
+      | 3f6b2c1e-9a4d-4e8b-b1c2-7d5e6f8a9b01 | usr-manager-0007 |
 
-  # Escenario 2: Cooperativa sin licencia activa configurada
-  Scenario Outline: Cooperative without active license configured
-    Given a GET request to "/api/v1/cooperatives/<cooperativeId>/license" for an entity without a current corporate contract in the system
-    When the service looks up the license record
+  # Escenario 2: Licencia inexistente o ajena
+  Scenario Outline: Unknown or foreign license
+    Given a GET request to "/api/v1/cooperative-licenses/<id>" sent by "<actor>" for a license not in charge of the manager
+    When the API searches the license
     Then the response status is 404
-    And the response follows RFC 7807 indicating the absence of an active subscription
 
     Examples:
-      | cooperativeId       |
-      | coop-no-license-099 |
+      | id                                   | actor            |
+      | 3f6b2c1e-9a4d-4e8b-b1c2-7d5e6f8a9b01 | usr-manager-0007 |
 
-  # Escenario 3: Acceso denegado por falta de vinculación a la entidad
-  Scenario Outline: Access denied due to missing entity membership
-    Given a GET request to "/api/v1/cooperatives/<cooperativeId>/license" issued by a manager "<managerId>" belonging to another cooperative
-    When the API verifies institutional membership
+  # Escenario 3: Solicitud sin autenticación
+  Scenario Outline: Request without authentication
+    Given a GET request to "/api/v1/cooperative-licenses/<id>" sent by "<actor>" without a valid access token
+    When the API checks the identity
+    Then the response status is 401
+
+    Examples:
+      | id                                   | actor            |
+      | 3f6b2c1e-9a4d-4e8b-b1c2-7d5e6f8a9b01 | anonymous-client |
+
+  # Escenario 4: Usuario sin rol de gestor técnico
+  Scenario Outline: User without the technical manager role
+    Given a GET request to "/api/v1/cooperative-licenses/<id>" sent by "<actor>" from a user who is not a technical manager
+    When the API checks the role
     Then the response status is 403
 
     Examples:
-      | cooperativeId      | managerId    |
-      | coop-valle-sama-01 | usr-mgr-0500 |
+      | id                                   | actor           |
+      | 3f6b2c1e-9a4d-4e8b-b1c2-7d5e6f8a9b01 | usr-farmer-0042 |
