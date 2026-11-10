@@ -3,7 +3,7 @@ Feature: Agronomic dossier sealing of a settled campaign (Harvest)
   I want to seal the dossier of a campaign via POST to /api/v1/plots/{plotId}/agronomic-dossiers
   so I can keep a final and verifiable document of the campaign
 
-  # Escenario 1: Expediente sellado
+  # Scenario 1: Dossier sealed
   Scenario Outline: Dossier sealed
     Given a POST request to "/api/v1/plots/<plotId>/agronomic-dossiers" sent by "<actor>" for a settled campaign of an own plot
     When the API gathers the campaign data, renders the document and stores its SHA-256 fingerprint
@@ -13,7 +13,7 @@ Feature: Agronomic dossier sealing of a settled campaign (Harvest)
       | plotId          | actor           |
       | plot-yarada-001 | usr-farmer-0042 |
 
-  # Escenario 2: Expediente ya sellado
+  # Scenario 2: Dossier already sealed
   Scenario Outline: Dossier already sealed
     Given a POST request to "/api/v1/plots/<plotId>/agronomic-dossiers" sent by "<actor>" for a campaign that already has a dossier
     When the seal is requested again
@@ -24,7 +24,7 @@ Feature: Agronomic dossier sealing of a settled campaign (Harvest)
       | plotId          | actor           |
       | plot-yarada-001 | usr-farmer-0042 |
 
-  # Escenario 3: Parcela o campaña inválida
+  # Scenario 3: Invalid plot or campaign
   Scenario Outline: Invalid plot or campaign
     Given a POST request to "/api/v1/plots/<plotId>/agronomic-dossiers" sent by "<actor>" with an invalid plot identifier or campaign
     When the API validates the request
@@ -34,7 +34,7 @@ Feature: Agronomic dossier sealing of a settled campaign (Harvest)
       | plotId          | actor           |
       | plot-yarada-001 | usr-farmer-0042 |
 
-  # Escenario 4: Parcela de otro productor
+  # Scenario 4: Plot of another producer
   Scenario Outline: Plot of another producer
     Given a POST request to "/api/v1/plots/<plotId>/agronomic-dossiers" sent by "<actor>" for a plot of another producer
     When the API checks the ownership
@@ -44,7 +44,7 @@ Feature: Agronomic dossier sealing of a settled campaign (Harvest)
       | plotId          | actor           |
       | plot-yarada-001 | usr-farmer-0042 |
 
-  # Escenario 5: Parcela inexistente o inactiva
+  # Scenario 5: Unknown or inactive plot
   Scenario Outline: Unknown or inactive plot
     Given a POST request to "/api/v1/plots/<plotId>/agronomic-dossiers" sent by "<actor>" for an unknown or inactive plot
     When the API searches the plot
@@ -54,7 +54,7 @@ Feature: Agronomic dossier sealing of a settled campaign (Harvest)
       | plotId          | actor           |
       | plot-yarada-001 | usr-farmer-0042 |
 
-  # Escenario 6: Campaña sin liquidar
+  # Scenario 6: Unsettled campaign
   Scenario Outline: Unsettled campaign
     Given a POST request to "/api/v1/plots/<plotId>/agronomic-dossiers" sent by "<actor>" for a campaign that has not been settled
     When the API evaluates the campaign

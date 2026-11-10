@@ -3,7 +3,7 @@ Feature: Paid individual plan extension request (Subscription)
   I want to request an extension with added hectares and an Idempotency-Key header via POST to /api/v1/subscriptions/{subscriptionId}/extensions
   so I can add hectares to the individual plan
 
-  # Escenario 1: Ampliación solicitada
+  # Scenario 1: Extension requested
   Scenario Outline: Extension requested
     Given a POST request to "/api/v1/subscriptions/<subscriptionId>/extensions" sent by "<actor>" with valid added hectares for an own plan
     When the API records the extension pending payment
@@ -14,7 +14,7 @@ Feature: Paid individual plan extension request (Subscription)
       | subscriptionId                       | actor           |
       | 5d2e8f41-7c3b-4a96-8e1f-2b4c6d8e0a12 | usr-farmer-0042 |
 
-  # Escenario 2: Reintento idempotente
+  # Scenario 2: Idempotent retry
   Scenario Outline: Idempotent retry
     Given a POST request to "/api/v1/subscriptions/<subscriptionId>/extensions" sent by "<actor>" that repeats a processed Idempotency-Key
     When the API identifies the key
@@ -25,7 +25,7 @@ Feature: Paid individual plan extension request (Subscription)
       | subscriptionId                       | actor           |
       | 5d2e8f41-7c3b-4a96-8e1f-2b4c6d8e0a12 | usr-farmer-0042 |
 
-  # Escenario 3: Datos inválidos
+  # Scenario 3: Invalid data
   Scenario Outline: Invalid data
     Given a POST request to "/api/v1/subscriptions/<subscriptionId>/extensions" sent by "<actor>" with invalid hectares
     When the API validates the request
@@ -35,7 +35,7 @@ Feature: Paid individual plan extension request (Subscription)
       | subscriptionId                       | actor           |
       | 5d2e8f41-7c3b-4a96-8e1f-2b4c6d8e0a12 | usr-farmer-0042 |
 
-  # Escenario 4: Operación en conflicto
+  # Scenario 4: Conflicting operation
   Scenario Outline: Conflicting operation
     Given a POST request to "/api/v1/subscriptions/<subscriptionId>/extensions" sent by "<actor>" for an extension incompatible with the current plan state
     When the API evaluates the request

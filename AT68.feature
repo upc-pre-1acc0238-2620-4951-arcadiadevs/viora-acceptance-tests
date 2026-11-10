@@ -3,7 +3,7 @@ Feature: Assistant answer history query (Assistant)
   I want to list the latest answers with a limit via GET to /api/v1/assistant/answers
   so I can show the recent answers and their freshness
 
-  # Escenario 1: Listado de respuestas vigentes
+  # Scenario 1: Valid answers list
   Scenario Outline: Valid answers list
     Given a GET request to "/api/v1/assistant/answers?limit=<limit>" sent by "<actor>" with limit 10
     When the API reads the answers of the last ten days
@@ -14,7 +14,7 @@ Feature: Assistant answer history query (Assistant)
       | limit | actor           |
       | 10    | usr-farmer-0042 |
 
-  # Escenario 2: Límite fuera de rango
+  # Scenario 2: Limit out of range
   Scenario Outline: Limit out of range
     Given a GET request to "/api/v1/assistant/answers?limit=<limit>" sent by "<actor>" with a limit outside 1 to 10
     When the API validates the parameter
@@ -24,7 +24,7 @@ Feature: Assistant answer history query (Assistant)
       | limit | actor           |
       | 10    | usr-farmer-0042 |
 
-  # Escenario 3: Productor sin plan activo
+  # Scenario 3: Producer without an active plan
   Scenario Outline: Producer without an active plan
     Given a GET request to "/api/v1/assistant/answers?limit=<limit>" sent by "<actor>" from a producer without an active plan
     When the API checks the subscription

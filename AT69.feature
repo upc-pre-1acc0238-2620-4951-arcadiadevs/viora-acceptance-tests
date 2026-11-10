@@ -3,7 +3,7 @@ Feature: Latest answer of a context query (Assistant)
   I want to request the latest answer of a screen and plot via GET to /api/v1/assistant/answers/latest
   so I can reopen the previous answer of the producer
 
-  # Escenario 1: Recuperación de la última respuesta
+  # Scenario 1: Latest answer recovery
   Scenario Outline: Latest answer recovery
     Given a GET request to "/api/v1/assistant/answers/latest?screen=<screen>&plotId=<plotId>" sent by "<actor>" for a context with an answer of the last ten days
     When the API finds the answer
@@ -13,7 +13,7 @@ Feature: Latest answer of a context query (Assistant)
       | screen      | plotId          | actor           |
       | ALTERNATION | plot-yarada-001 | usr-farmer-0042 |
 
-  # Escenario 2: Contexto sin respuesta previa
+  # Scenario 2: Context without previous answer
   Scenario Outline: Context without previous answer
     Given a GET request to "/api/v1/assistant/answers/latest?screen=<screen>&plotId=<plotId>" sent by "<actor>" for a context without valid answers
     When the API searches the answer
@@ -23,7 +23,7 @@ Feature: Latest answer of a context query (Assistant)
       | screen      | plotId          | actor           |
       | ALTERNATION | plot-yarada-001 | usr-farmer-0042 |
 
-  # Escenario 3: Parámetros inválidos o acceso denegado
+  # Scenario 3: Invalid parameters or access denied
   Scenario Outline: Invalid parameters or access denied
     Given a GET request to "/api/v1/assistant/answers/latest?screen=<screen>&plotId=<plotId>" sent by "<actor>" with invalid parameters, a foreign plot or an inactive plan
     When the API validates the request

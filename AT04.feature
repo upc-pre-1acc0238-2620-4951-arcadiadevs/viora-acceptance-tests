@@ -3,7 +3,7 @@ Feature: Authenticated user profile query (Profiles)
   I want to request the profile of the authenticated user via GET to /api/v1/profiles/{userId}
   so I can show the personal and contact data of the account
 
-  # Escenario 1: Consulta exitosa de perfil propio
+  # Scenario 1: Successful own profile query
   Scenario Outline: Successful own profile query
     Given a GET request to "/api/v1/profiles/<userId>" sent by "<actor>" with a valid bearer token for the same user
     When the API reads the profile
@@ -14,7 +14,7 @@ Feature: Authenticated user profile query (Profiles)
       | userId          | actor           |
       | usr-farmer-0042 | usr-farmer-0042 |
 
-  # Escenario 2: Intento de consulta de perfil de otro usuario
+  # Scenario 2: Attempt to query another user profile
   Scenario Outline: Attempt to query another user profile
     Given a GET request to "/api/v1/profiles/<userId>" sent by "<actor>" for a user different from the authenticated one
     When the API checks the ownership
@@ -24,7 +24,7 @@ Feature: Authenticated user profile query (Profiles)
       | userId          | actor           |
       | usr-farmer-0042 | usr-farmer-0042 |
 
-  # Escenario 3: Usuario inexistente
+  # Scenario 3: Unknown user
   Scenario Outline: Unknown user
     Given a GET request to "/api/v1/profiles/<userId>" sent by "<actor>" for an unregistered user identifier
     When the API searches the profile

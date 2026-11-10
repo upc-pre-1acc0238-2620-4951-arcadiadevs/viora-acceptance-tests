@@ -3,7 +3,7 @@ Feature: Question catalog query by context (Assistant)
   I want to request the assistant questions of a screen via GET to /api/v1/assistant/questions
   so I can show the closed questions available with the real figures
 
-  # Escenario 1: Catálogo de preguntas de una parcela
+  # Scenario 1: Question catalog of a plot
   Scenario Outline: Question catalog of a plot
     Given a GET request to "/api/v1/assistant/questions?screen=<screen>&plotId=<plotId>" sent by "<actor>" with screen ALTERNATION for an own plot
     When the API evaluates the plot data
@@ -14,7 +14,7 @@ Feature: Question catalog query by context (Assistant)
       | screen      | plotId          | actor           |
       | ALTERNATION | plot-yarada-001 | usr-farmer-0042 |
 
-  # Escenario 2: Catálogo sobre todo el campo
+  # Scenario 2: Catalog about the whole field
   Scenario Outline: Catalog about the whole field
     Given a GET request to "/api/v1/assistant/questions?screen=<screen>&plotId=<plotId>" sent by "<actor>" with screen HOME and no plot
     When the API processes the request
@@ -25,7 +25,7 @@ Feature: Question catalog query by context (Assistant)
       | screen      | plotId          | actor           |
       | ALTERNATION | plot-yarada-001 | usr-farmer-0042 |
 
-  # Escenario 3: Parámetros inválidos
+  # Scenario 3: Invalid parameters
   Scenario Outline: Invalid parameters
     Given a GET request to "/api/v1/assistant/questions?screen=<screen>&plotId=<plotId>" sent by "<actor>" with an unknown screen or a malformed plot
     When the API validates the request
@@ -35,7 +35,7 @@ Feature: Question catalog query by context (Assistant)
       | screen      | plotId          | actor           |
       | ALTERNATION | plot-yarada-001 | usr-farmer-0042 |
 
-  # Escenario 4: Acceso denegado o parcela inexistente
+  # Scenario 4: Access denied or unknown plot
   Scenario Outline: Access denied or unknown plot
     Given a GET request to "/api/v1/assistant/questions?screen=<screen>&plotId=<plotId>" sent by "<actor>" for a foreign plot, a producer without an active plan or an unknown plot
     When the API checks the access

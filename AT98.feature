@@ -3,7 +3,7 @@ Feature: Member plot sector query (Cooperative)
   I want to query the sector of a plot via GET to /api/v1/plot-sector-assignments/{plotId}
   so I can know the territorial location of the plot
 
-  # Escenario 1: Consulta exitosa
+  # Scenario 1: Successful query
   Scenario Outline: Successful query
     Given a GET request to "/api/v1/plot-sector-assignments/<plotId>" sent by "<actor>" for a plot reached by the user
     When the API reads its sector
@@ -13,7 +13,7 @@ Feature: Member plot sector query (Cooperative)
       | plotId          | actor            |
       | plot-yarada-001 | usr-manager-0007 |
 
-  # Escenario 2: Parcela sin sector o fuera de alcance
+  # Scenario 2: Plot without sector or out of reach
   Scenario Outline: Plot without sector or out of reach
     Given a GET request to "/api/v1/plot-sector-assignments/<plotId>" sent by "<actor>" for a plot without sector or out of reach of the user
     When the API searches the sector
@@ -23,7 +23,7 @@ Feature: Member plot sector query (Cooperative)
       | plotId          | actor            |
       | plot-yarada-001 | usr-manager-0007 |
 
-  # Escenario 3: Solicitud sin autenticación
+  # Scenario 3: Request without authentication
   Scenario Outline: Request without authentication
     Given a GET request to "/api/v1/plot-sector-assignments/<plotId>" sent by "<actor>" without a valid access token
     When the API checks the identity
@@ -33,7 +33,7 @@ Feature: Member plot sector query (Cooperative)
       | plotId          | actor            |
       | plot-yarada-001 | anonymous-client |
 
-  # Escenario 4: Usuario sin licencia asociada
+  # Scenario 4: User without an associated license
   Scenario Outline: User without an associated license
     Given a GET request to "/api/v1/plot-sector-assignments/<plotId>" sent by "<actor>" from a user who reaches no license
     When the API checks the access

@@ -3,7 +3,7 @@ Feature: Data sharing consents query (Membership)
   I want to list the data sharing consents via GET to /api/v1/data-sharing-consents
   so I can show the producer who reads their data
 
-  # Escenario 1: Listado de consentimientos
+  # Scenario 1: Consents list
   Scenario Outline: Consents list
     Given a GET request to "/api/v1/data-sharing-consents" sent by "<actor>" from a producer
     When the API reads the producer consents
@@ -14,7 +14,7 @@ Feature: Data sharing consents query (Membership)
       | actor           |
       | usr-farmer-0042 |
 
-  # Escenario 2: Solicitud sin autenticación
+  # Scenario 2: Request without authentication
   Scenario Outline: Request without authentication
     Given a GET request to "/api/v1/data-sharing-consents" sent by "<actor>" without a valid access token
     When the API checks the identity
@@ -24,7 +24,7 @@ Feature: Data sharing consents query (Membership)
       | actor            |
       | anonymous-client |
 
-  # Escenario 3: Usuario sin rol de productor
+  # Scenario 3: User without the producer role
   Scenario Outline: User without the producer role
     Given a GET request to "/api/v1/data-sharing-consents" sent by "<actor>" from a user who is not a producer
     When the API checks the role

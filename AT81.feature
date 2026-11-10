@@ -3,7 +3,7 @@ Feature: Plan extension terms query (Subscription)
   I want to query the extension terms of a plan via GET to /api/v1/subscriptions/{subscriptionId}/extension-terms
   so I can tell the producer how the plan can grow
 
-  # Escenario 1: Consulta exitosa
+  # Scenario 1: Successful query
   Scenario Outline: Successful query
     Given a GET request to "/api/v1/subscriptions/<subscriptionId>/extension-terms" sent by "<actor>" for an own plan
     When the API evaluates the plan
@@ -14,7 +14,7 @@ Feature: Plan extension terms query (Subscription)
       | subscriptionId                       | actor           |
       | 5d2e8f41-7c3b-4a96-8e1f-2b4c6d8e0a12 | usr-farmer-0042 |
 
-  # Escenario 2: Plan no disponible
+  # Scenario 2: Unavailable plan
   Scenario Outline: Unavailable plan
     Given a GET request to "/api/v1/subscriptions/<subscriptionId>/extension-terms" sent by "<actor>" for a plan that does not belong to the producer
     When the API searches the plan

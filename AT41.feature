@@ -3,7 +3,7 @@ Feature: Early cooperative activation code revocation and quota restitution (Mem
   I want to revoke an available activation code via POST to /api/v1/invitation-codes/{id}/revocations
   so I can void the invitation and return its seat and hectares to the license
 
-  # Escenario 1: Revocación exitosa y restitución de cupo a la licencia
+  # Scenario 1: Successful revocation and quota restitution
   Scenario Outline: Successful revocation and quota restitution
     Given a POST request to "/api/v1/invitation-codes/<id>/revocations" sent by "<actor>" for an available code of the manager
     When the API revokes the code
@@ -14,7 +14,7 @@ Feature: Early cooperative activation code revocation and quota restitution (Mem
       | id                                   | actor            |
       | 3f6b2c1e-9a4d-4e8b-b1c2-7d5e6f8a9b01 | usr-manager-0007 |
 
-  # Escenario 2: Código ya canjeado o inactivo
+  # Scenario 2: Code already redeemed or inactive
   Scenario Outline: Code already redeemed or inactive
     Given a POST request to "/api/v1/invitation-codes/<id>/revocations" sent by "<actor>" for a redeemed, revoked or expired code
     When the API checks the code status
@@ -24,7 +24,7 @@ Feature: Early cooperative activation code revocation and quota restitution (Mem
       | id                                   | actor            |
       | 3f6b2c1e-9a4d-4e8b-b1c2-7d5e6f8a9b01 | usr-manager-0007 |
 
-  # Escenario 3: Denegación de acceso para usuarios no gestores
+  # Scenario 3: Access denied for non manager users
   Scenario Outline: Access denied for non manager users
     Given a POST request to "/api/v1/invitation-codes/<id>/revocations" sent by "<actor>" from a user without the technical manager role
     When the API checks the role

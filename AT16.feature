@@ -3,7 +3,7 @@ Feature: Virtual sensor node registration and plot linking (Telemetry)
   I want to register a virtual sensor node (microclimate or soil probe at 30/60 cm) via API
   so I can activate agroclimatic telemetry simulation for the plot
 
-  # Escenario 1: Alta exitosa de nodo sensor virtual
+  # Scenario 1: Successful virtual sensor node registration
   Scenario Outline: Successful virtual sensor node registration
     Given a POST request to "/api/v1/plots/<plotId>/iot-devices" with body containing "<name>", "<type>" and <depthCm>
     When the API validates valid sensor type and allowed depth for soil probes
@@ -15,7 +15,7 @@ Feature: Virtual sensor node registration and plot linking (Telemetry)
       | plot-jeronomo-001 | Weather Station 01 | MICROCLIMATE | 0       |
       | plot-jeronomo-001 | Soil Probe 30cm    | SOIL_PROBE   | 30      |
 
-  # Escenario 2: Nombre duplicado de sensor en la misma parcela
+  # Scenario 2: Duplicate sensor node name in the same plot
   Scenario Outline: Duplicate sensor node name in the same plot
     Given a POST request with an already registered sensor name in said plot: "<name>"
     When the API checks name uniqueness within the plot
@@ -25,7 +25,7 @@ Feature: Virtual sensor node registration and plot linking (Telemetry)
       | plotId            | name               |
       | plot-jeronomo-001 | Weather Station 01 |
 
-  # Escenario 3: Parámetros de nodo inválidos
+  # Scenario 3: Invalid sensor node parameters
   Scenario Outline: Invalid sensor node parameters
     Given a POST request with unknown type or unallowed probe depth: "<type>", <depthCm>
     When the API evaluates technical configuration

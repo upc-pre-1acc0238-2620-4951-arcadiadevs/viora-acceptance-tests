@@ -3,7 +3,7 @@ Feature: Chronological events and agronomic thinning log query (Thinning)
   I want to query the thinning events with optional plot and campaign filters via GET to /api/v1/thinning-events
   so I can show every sampling, prescription and confirmation in chronological order
 
-  # Escenario 1: Consulta cronológica exitosa de bitácora de intervenciones (HTTP 200 OK)
+  # Scenario 1: Successful chronological log query
   Scenario Outline: Successful chronological log query
     Given a GET request to "/api/v1/thinning-events?plotId=<plotId>&campaignYear=<campaignYear>" sent by "<actor>" with optional plot and campaign filters
     When the API reads the thinning events
@@ -14,7 +14,7 @@ Feature: Chronological events and agronomic thinning log query (Thinning)
       | plotId          | campaignYear | actor           |
       | plot-yarada-001 | 2026         | usr-farmer-0042 |
 
-  # Escenario 2: Cuartel no encontrado (HTTP 404 Not Found)
+  # Scenario 2: Plot not found
   Scenario Outline: Plot not found
     Given a GET request to "/api/v1/thinning-events?plotId=<plotId>&campaignYear=<campaignYear>" sent by "<actor>" with an unknown plot identifier
     When the API searches the plot

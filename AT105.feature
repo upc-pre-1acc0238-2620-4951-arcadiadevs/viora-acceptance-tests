@@ -3,7 +3,7 @@ Feature: Thinning prescription query (Thinning)
   I want to query a prescription via GET to /api/v1/thinning-prescriptions/{id}
   so I can retrieve it in any of its states
 
-  # Escenario 1: Consulta exitosa
+  # Scenario 1: Successful query
   Scenario Outline: Successful query
     Given a GET request to "/api/v1/thinning-prescriptions/<id>" sent by "<actor>" for an own prescription
     When the API reads the prescription
@@ -13,7 +13,7 @@ Feature: Thinning prescription query (Thinning)
       | id                                   | actor           |
       | 3f6b2c1e-9a4d-4e8b-b1c2-7d5e6f8a9b01 | usr-farmer-0042 |
 
-  # Escenario 2: Identificador inválido
+  # Scenario 2: Invalid identifier
   Scenario Outline: Invalid identifier
     Given a GET request to "/api/v1/thinning-prescriptions/<id>" sent by "<actor>" with a malformed identifier
     When the API validates the parameter
@@ -23,7 +23,7 @@ Feature: Thinning prescription query (Thinning)
       | id                                   | actor           |
       | 3f6b2c1e-9a4d-4e8b-b1c2-7d5e6f8a9b01 | usr-farmer-0042 |
 
-  # Escenario 3: Prescripción de otro productor
+  # Scenario 3: Prescription of another producer
   Scenario Outline: Prescription of another producer
     Given a GET request to "/api/v1/thinning-prescriptions/<id>" sent by "<actor>" for a prescription of another producer
     When the API checks the ownership
@@ -33,7 +33,7 @@ Feature: Thinning prescription query (Thinning)
       | id                                   | actor           |
       | 3f6b2c1e-9a4d-4e8b-b1c2-7d5e6f8a9b01 | usr-farmer-0042 |
 
-  # Escenario 4: Prescripción no encontrada
+  # Scenario 4: Prescription not found
   Scenario Outline: Prescription not found
     Given a GET request to "/api/v1/thinning-prescriptions/<id>" sent by "<actor>" for an unknown prescription or one of an inactive plot
     When the API searches the prescription

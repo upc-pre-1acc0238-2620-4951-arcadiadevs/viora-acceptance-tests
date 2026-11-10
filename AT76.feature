@@ -3,7 +3,7 @@ Feature: Password reset link validity check (IAM)
   I want to check a password reset link via GET to /api/v1/auth/password-reset-tokens/{token}
   so I can know whether it can be used without consuming it
 
-  # Escenario 1: Enlace vigente
+  # Scenario 1: Valid link
   Scenario Outline: Valid link
     Given a GET request to "/api/v1/auth/password-reset-tokens/<token>" sent by "<actor>" for a usable link
     When the API validates the link without consuming it
@@ -13,7 +13,7 @@ Feature: Password reset link validity check (IAM)
       | token        | actor            |
       | a7f3c9e1b2d4 | anonymous-client |
 
-  # Escenario 2: Enlace no disponible
+  # Scenario 2: Unavailable link
   Scenario Outline: Unavailable link
     Given a GET request to "/api/v1/auth/password-reset-tokens/<token>" sent by "<actor>" for an expired, used or replaced link
     When the API validates the link

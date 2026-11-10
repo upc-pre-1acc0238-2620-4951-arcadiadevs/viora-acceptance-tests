@@ -3,7 +3,7 @@ Feature: Checkout preference generation for independent producer subscription (S
   I want to create an individual subscription pending payment via POST to /api/v1/subscriptions
   so I can obtain the checkout data of the payment gateway
 
-  # Escenario 1: Creación exitosa de preferencia de suscripción
+  # Scenario 1: Successful subscription preference creation
   Scenario Outline: Successful subscription preference creation
     Given a POST request to "/api/v1/subscriptions" sent by "<actor>" with the producer plan and a positive number of hectares
     When the API creates the subscription pending payment
@@ -14,7 +14,7 @@ Feature: Checkout preference generation for independent producer subscription (S
       | actor           |
       | usr-farmer-0042 |
 
-  # Escenario 2: Datos de suscripción inválidos
+  # Scenario 2: Invalid subscription data
   Scenario Outline: Invalid subscription data
     Given a POST request to "/api/v1/subscriptions" sent by "<actor>" with zero hectares or an unknown plan
     When the API validates the request body

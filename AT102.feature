@@ -3,7 +3,7 @@ Feature: Sealed dossiers of a plot query (Harvest)
   I want to list the sealed dossiers of a plot via GET to /api/v1/plots/{plotId}/agronomic-dossiers
   so I can review the final documents by campaign
 
-  # Escenario 1: Listado de expedientes
+  # Scenario 1: Dossiers list
   Scenario Outline: Dossiers list
     Given a GET request to "/api/v1/plots/<plotId>/agronomic-dossiers" sent by "<actor>" for an active plot
     When the API reads the dossiers
@@ -14,7 +14,7 @@ Feature: Sealed dossiers of a plot query (Harvest)
       | plotId          | actor           |
       | plot-yarada-001 | usr-farmer-0042 |
 
-  # Escenario 2: Parcela inexistente o inactiva
+  # Scenario 2: Unknown or inactive plot
   Scenario Outline: Unknown or inactive plot
     Given a GET request to "/api/v1/plots/<plotId>/agronomic-dossiers" sent by "<actor>" for an unknown or inactive plot
     When the API searches the plot

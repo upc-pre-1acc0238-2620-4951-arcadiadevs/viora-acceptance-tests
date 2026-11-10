@@ -3,7 +3,7 @@ Feature: Intake history query by campaign (Cooperative)
   I want to list the intake of each campaign via GET to /api/v1/intake-forecasts
   so I can compare the campaign in progress with the settled harvests of previous campaigns
 
-  # Escenario 1: Consulta del acopio por campaña
+  # Scenario 1: Intake by campaign query
   Scenario Outline: Intake by campaign query
     Given a GET request to "/api/v1/intake-forecasts" sent by "<actor>" from a technical manager with a license in force
     When the API projects the campaign in progress and adds the settled harvests of past campaigns
@@ -14,7 +14,7 @@ Feature: Intake history query by campaign (Cooperative)
       | actor            |
       | usr-manager-0007 |
 
-  # Escenario 2: Solicitud sin autenticación
+  # Scenario 2: Request without authentication
   Scenario Outline: Request without authentication
     Given a GET request to "/api/v1/intake-forecasts" sent by "<actor>" without a valid access token
     When the API checks the identity
@@ -24,7 +24,7 @@ Feature: Intake history query by campaign (Cooperative)
       | actor            |
       | anonymous-client |
 
-  # Escenario 3: Gestor sin licencia vigente
+  # Scenario 3: Manager without a license in force
   Scenario Outline: Manager without a license in force
     Given a GET request to "/api/v1/intake-forecasts" sent by "<actor>" from a user who is not a manager with a license in force
     When the API checks the access

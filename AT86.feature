@@ -3,7 +3,7 @@ Feature: Member release from the institutional license (Membership)
   I want to release a member with memberId via POST to /api/v1/cooperative-licenses/{id}/member-releases
   so I can stop the manager access to the member data and free the seat after the grace period
 
-  # Escenario 1: Desvinculación exitosa
+  # Scenario 1: Successful release
   Scenario Outline: Successful release
     Given a POST request to "/api/v1/cooperative-licenses/<id>/member-releases" sent by "<actor>" for a member of the manager license
     When the API records the release
@@ -14,7 +14,7 @@ Feature: Member release from the institutional license (Membership)
       | id                                   | actor            |
       | 3f6b2c1e-9a4d-4e8b-b1c2-7d5e6f8a9b01 | usr-manager-0007 |
 
-  # Escenario 2: Socio inválido
+  # Scenario 2: Invalid member
   Scenario Outline: Invalid member
     Given a POST request to "/api/v1/cooperative-licenses/<id>/member-releases" sent by "<actor>" with an invalid memberId
     When the API validates the request
@@ -24,7 +24,7 @@ Feature: Member release from the institutional license (Membership)
       | id                                   | actor            |
       | 3f6b2c1e-9a4d-4e8b-b1c2-7d5e6f8a9b01 | usr-manager-0007 |
 
-  # Escenario 3: Licencia o socio no encontrados
+  # Scenario 3: License or member not found
   Scenario Outline: License or member not found
     Given a POST request to "/api/v1/cooperative-licenses/<id>/member-releases" sent by "<actor>" for a foreign license or a user who is not a member
     When the API searches the member
@@ -34,7 +34,7 @@ Feature: Member release from the institutional license (Membership)
       | id                                   | actor            |
       | 3f6b2c1e-9a4d-4e8b-b1c2-7d5e6f8a9b01 | usr-manager-0007 |
 
-  # Escenario 4: Socio ya desvinculado
+  # Scenario 4: Member already released
   Scenario Outline: Member already released
     Given a POST request to "/api/v1/cooperative-licenses/<id>/member-releases" sent by "<actor>" for a member already released
     When the API checks the member status
@@ -44,7 +44,7 @@ Feature: Member release from the institutional license (Membership)
       | id                                   | actor            |
       | 3f6b2c1e-9a4d-4e8b-b1c2-7d5e6f8a9b01 | usr-manager-0007 |
 
-  # Escenario 5: Solicitud sin autenticación
+  # Scenario 5: Request without authentication
   Scenario Outline: Request without authentication
     Given a POST request to "/api/v1/cooperative-licenses/<id>/member-releases" sent by "<actor>" without a valid access token
     When the API checks the identity
@@ -54,7 +54,7 @@ Feature: Member release from the institutional license (Membership)
       | id                                   | actor            |
       | 3f6b2c1e-9a4d-4e8b-b1c2-7d5e6f8a9b01 | anonymous-client |
 
-  # Escenario 6: Usuario sin rol de gestor técnico
+  # Scenario 6: User without the technical manager role
   Scenario Outline: User without the technical manager role
     Given a POST request to "/api/v1/cooperative-licenses/<id>/member-releases" sent by "<actor>" from a user who is not a technical manager
     When the API checks the role

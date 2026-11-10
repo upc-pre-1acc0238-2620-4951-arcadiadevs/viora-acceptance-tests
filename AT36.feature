@@ -3,7 +3,7 @@ Feature: Password update for an authenticated session (IAM)
   I want to change the password with the current and the new password via PATCH to /api/v1/auth/passwords
   so I can keep the account secure
 
-  # Escenario 1: Actualización exitosa de contraseña
+  # Scenario 1: Successful password update
   Scenario Outline: Successful password update
     Given a PATCH request to "/api/v1/auth/passwords" sent by "<actor>" with current password, new password and confirmation
     When the API verifies the current password and stores the new one
@@ -13,7 +13,7 @@ Feature: Password update for an authenticated session (IAM)
       | actor           |
       | usr-farmer-0042 |
 
-  # Escenario 2: Contraseña actual incorrecta
+  # Scenario 2: Wrong current password
   Scenario Outline: Wrong current password
     Given a PATCH request to "/api/v1/auth/passwords" sent by "<actor>" with a wrong current password
     When the API verifies the current password
@@ -24,7 +24,7 @@ Feature: Password update for an authenticated session (IAM)
       | actor           |
       | usr-farmer-0042 |
 
-  # Escenario 3: Nueva contraseña no cumple políticas de complejidad
+  # Scenario 3: New password does not meet complexity policies
   Scenario Outline: New password does not meet complexity policies
     Given a PATCH request to "/api/v1/auth/passwords" sent by "<actor>" with a new password that is too weak
     When the API validates the new password

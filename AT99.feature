@@ -3,7 +3,7 @@ Feature: Sector assignment to a plot (Cooperative)
   I want to give a plot a sector with sectorZoneId or name via PUT to /api/v1/plot-sector-assignments/{plotId}
   so I can group the plot within the territorial organization
 
-  # Escenario 1: Sector asignado
+  # Scenario 1: Sector assigned
   Scenario Outline: Sector assigned
     Given a PUT request to "/api/v1/plot-sector-assignments/<plotId>" sent by "<actor>" with a sector of the list or a name that matches it
     When the API assigns the sector
@@ -13,7 +13,7 @@ Feature: Sector assignment to a plot (Cooperative)
       | plotId          | actor           |
       | plot-yarada-001 | usr-farmer-0042 |
 
-  # Escenario 2: Nombre pendiente de confirmación
+  # Scenario 2: Name pending confirmation
   Scenario Outline: Name pending confirmation
     Given a PUT request to "/api/v1/plot-sector-assignments/<plotId>" sent by "<actor>" with a name that matches no sector of the list
     When the API processes the assignment
@@ -24,7 +24,7 @@ Feature: Sector assignment to a plot (Cooperative)
       | plotId          | actor           |
       | plot-yarada-001 | usr-farmer-0042 |
 
-  # Escenario 3: Datos inválidos
+  # Scenario 3: Invalid data
   Scenario Outline: Invalid data
     Given a PUT request to "/api/v1/plot-sector-assignments/<plotId>" sent by "<actor>" without both fields, with both or with an invalid name
     When the API validates the request
@@ -34,7 +34,7 @@ Feature: Sector assignment to a plot (Cooperative)
       | plotId          | actor           |
       | plot-yarada-001 | usr-farmer-0042 |
 
-  # Escenario 4: Productor sin plan patrocinado
+  # Scenario 4: Producer without a sponsored plan
   Scenario Outline: Producer without a sponsored plan
     Given a PUT request to "/api/v1/plot-sector-assignments/<plotId>" sent by "<actor>" from a producer without a sponsored plan
     When the API checks the access
@@ -44,7 +44,7 @@ Feature: Sector assignment to a plot (Cooperative)
       | plotId          | actor           |
       | plot-yarada-001 | usr-farmer-0042 |
 
-  # Escenario 5: Parcela o sector no encontrado
+  # Scenario 5: Plot or sector not found
   Scenario Outline: Plot or sector not found
     Given a PUT request to "/api/v1/plot-sector-assignments/<plotId>" sent by "<actor>" for a plot that is not an active member plot or a sector outside the license
     When the API searches them
@@ -54,7 +54,7 @@ Feature: Sector assignment to a plot (Cooperative)
       | plotId          | actor           |
       | plot-yarada-001 | usr-farmer-0042 |
 
-  # Escenario 6: Solicitud sin autenticación
+  # Scenario 6: Request without authentication
   Scenario Outline: Request without authentication
     Given a PUT request to "/api/v1/plot-sector-assignments/<plotId>" sent by "<actor>" without a valid access token
     When the API checks the identity

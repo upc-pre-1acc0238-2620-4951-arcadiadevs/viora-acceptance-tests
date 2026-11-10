@@ -3,7 +3,7 @@ Feature: Global plot sampling overview query for plot picker (Thinning)
   I want to query the sampling state of every plot of the campaign via GET to /api/v1/samplings
   so I can show the coverage of each plot in the plot picker
 
-  # Escenario 1: Consulta exitosa de cobertura y estado de muestreo de los cuarteles (HTTP 200 OK)
+  # Scenario 1: Successful sampling coverage and status query
   Scenario Outline: Successful sampling coverage and status query
     Given a GET request to "/api/v1/samplings?campaignYear=<campaignYear>" sent by "<actor>" with an optional campaign year
     When the API reads the sampling state of the plots
@@ -14,7 +14,7 @@ Feature: Global plot sampling overview query for plot picker (Thinning)
       | campaignYear | actor           |
       | 2026         | usr-farmer-0042 |
 
-  # Escenario 2: Formato inválido en año de campaña o filtro de estado (HTTP 400 Bad Request)
+  # Scenario 2: Invalid campaign year
   Scenario Outline: Invalid campaign year
     Given a GET request to "/api/v1/samplings?campaignYear=<campaignYear>" sent by "<actor>" with a campaign year below 2000
     When the API validates the parameter

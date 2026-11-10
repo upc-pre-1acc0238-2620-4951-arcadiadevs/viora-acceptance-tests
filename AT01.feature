@@ -3,7 +3,7 @@ Feature: User account credential registration and role assignment (IAM)
   I want to send the sign-up data with email, password, full name, E.164 phone and institutional role via POST to /api/v1/auth/sign-up
   so I can create the user account with an encrypted password and its assigned role
 
-  # Escenario 1: Creación exitosa de cuenta de usuario con rol de gestor técnico o productor
+  # Scenario 1: Successful account creation with technical manager or producer role
   Scenario Outline: Successful account creation with technical manager or producer role
     Given a POST request to "/api/v1/auth/sign-up" sent by "<actor>" with email, password, full name, phone and role
     When the API validates the data and stores the account
@@ -14,7 +14,7 @@ Feature: User account credential registration and role assignment (IAM)
       | actor            |
       | anonymous-client |
 
-  # Escenario 2: Correo electrónico o teléfono ya registrado en el sistema
+  # Scenario 2: Email or phone already registered
   Scenario Outline: Email or phone already registered
     Given a POST request to "/api/v1/auth/sign-up" sent by "<actor>" with an email or phone already used by another account
     When the API checks identity uniqueness
@@ -25,7 +25,7 @@ Feature: User account credential registration and role assignment (IAM)
       | actor            |
       | anonymous-client |
 
-  # Escenario 3: Contraseña o número telefónico no cumplen con las políticas de validación
+  # Scenario 3: Password or phone does not meet the validation policies
   Scenario Outline: Password or phone does not meet the validation policies
     Given a POST request to "/api/v1/auth/sign-up" sent by "<actor>" with a short password or a phone outside the E.164 format
     When the API validates the request body

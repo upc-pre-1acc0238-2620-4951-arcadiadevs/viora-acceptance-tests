@@ -3,7 +3,7 @@ Feature: Cooperative member farmer detail query (Cooperative)
   I want to query a member of the license via GET to /api/v1/cooperative-members/{id}
   so I can review the member record while they share their data
 
-  # Escenario 1: Consulta exitosa
+  # Scenario 1: Successful query
   Scenario Outline: Successful query
     Given a GET request to "/api/v1/cooperative-members/<id>" sent by "<actor>" for a member of the manager license
     When the API reads the member
@@ -14,7 +14,7 @@ Feature: Cooperative member farmer detail query (Cooperative)
       | id                                   | actor            |
       | 3f6b2c1e-9a4d-4e8b-b1c2-7d5e6f8a9b01 | usr-manager-0007 |
 
-  # Escenario 2: Socio no encontrado
+  # Scenario 2: Member not found
   Scenario Outline: Member not found
     Given a GET request to "/api/v1/cooperative-members/<id>" sent by "<actor>" for an identifier that is not a member of the license
     When the API searches the member
@@ -24,7 +24,7 @@ Feature: Cooperative member farmer detail query (Cooperative)
       | id                                   | actor            |
       | 3f6b2c1e-9a4d-4e8b-b1c2-7d5e6f8a9b01 | usr-manager-0007 |
 
-  # Escenario 3: Solicitud sin autenticación
+  # Scenario 3: Request without authentication
   Scenario Outline: Request without authentication
     Given a GET request to "/api/v1/cooperative-members/<id>" sent by "<actor>" without a valid access token
     When the API checks the identity
@@ -34,7 +34,7 @@ Feature: Cooperative member farmer detail query (Cooperative)
       | id                                   | actor            |
       | 3f6b2c1e-9a4d-4e8b-b1c2-7d5e6f8a9b01 | anonymous-client |
 
-  # Escenario 4: Gestor sin licencia vigente
+  # Scenario 4: Manager without a license in force
   Scenario Outline: Manager without a license in force
     Given a GET request to "/api/v1/cooperative-members/<id>" sent by "<actor>" from a user who is not a manager with a license in force
     When the API checks the access

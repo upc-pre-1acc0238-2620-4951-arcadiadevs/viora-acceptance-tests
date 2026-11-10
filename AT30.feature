@@ -3,7 +3,7 @@ Feature: Early aggregated projection of sustained green and black olive intake v
   I want to request the intake projection of a campaign via GET to /api/v1/intake-forecasts/{campaignYear}
   so I can consolidate only the tons backed by estimable plots by commercial aptitude
 
-  # Escenario 1: Proyección agregada basada exclusivamente en parcelas evaluadas
+  # Scenario 1: Aggregated projection based only on evaluated plots
   Scenario Outline: Aggregated projection based only on evaluated plots
     Given a GET request to "/api/v1/intake-forecasts/<campaignYear>" sent by "<actor>" for the campaign in progress
     When the API adds up the evaluated member plots
@@ -14,7 +14,7 @@ Feature: Early aggregated projection of sustained green and black olive intake v
       | campaignYear | actor            |
       | 2026         | usr-manager-0007 |
 
-  # Escenario 2: Notificación de cobertura muestral parcial
+  # Scenario 2: Partial sampling coverage notice
   Scenario Outline: Partial sampling coverage notice
     Given a GET request to "/api/v1/intake-forecasts/<campaignYear>" sent by "<actor>" for a cooperative with low evaluation coverage
     When the API computes the coverage
@@ -25,7 +25,7 @@ Feature: Early aggregated projection of sustained green and black olive intake v
       | campaignYear | actor            |
       | 2026         | usr-manager-0007 |
 
-  # Escenario 3: Acceso no autorizado para usuarios sin rol institucional
+  # Scenario 3: Unauthorized access for users without institutional role
   Scenario Outline: Unauthorized access for users without institutional role
     Given a GET request to "/api/v1/intake-forecasts/<campaignYear>" sent by "<actor>" from a user without the technical manager role
     When the API checks the role

@@ -3,7 +3,7 @@ Feature: Plot removal and logical soft delete from inventory (Orchard)
   I want to request the removal of a plot from the API
   so I can deactivate plots registered by error or decommissioned from production
 
-  # Escenario 1: Eliminación exitosa
+  # Scenario 1: Successful plot soft delete
   Scenario Outline: Successful plot soft delete
     Given a DELETE request to "/api/v1/plots/<plotId>" issued by the plot owner
     When the API validates ownership and executes soft delete of the plot
@@ -13,7 +13,7 @@ Feature: Plot removal and logical soft delete from inventory (Orchard)
       | plotId            |
       | plot-jeronomo-001 |
 
-  # Escenario 2: Parcela ajena
+  # Scenario 2: Unauthorized deletion of another user's plot
   Scenario Outline: Unauthorized deletion of another user's plot
     Given a DELETE request to "/api/v1/plots/<plotId>" belonging to another user
     When the API verifies permissions

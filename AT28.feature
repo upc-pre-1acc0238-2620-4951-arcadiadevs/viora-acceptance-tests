@@ -3,7 +3,7 @@ Feature: Final agronomic dossier query and export (Harvest)
   I want to request the sealed dossier of a plot campaign with content negotiation via GET to /api/v1/plots/{plotId}/agronomic-dossiers/{campaignYear}
   so I can download the sealed dossier with its SHA-256 fingerprint
 
-  # Escenario 1: Descarga del expediente sellado en formato PDF
+  # Scenario 1: Sealed dossier download as PDF
   Scenario Outline: Sealed dossier download as PDF
     Given a GET request to "/api/v1/plots/<plotId>/agronomic-dossiers/<campaignYear>" sent by "<actor>" with Accept application/pdf for a campaign with a sealed dossier
     When the API retrieves the sealed dossier
@@ -14,7 +14,7 @@ Feature: Final agronomic dossier query and export (Harvest)
       | plotId          | campaignYear | actor           |
       | plot-yarada-001 | 2026         | usr-farmer-0042 |
 
-  # Escenario 2: Consulta de expediente consolidado y metadatos con hash en campaña cerrada
+  # Scenario 2: Consolidated dossier and hash metadata of a closed campaign
   Scenario Outline: Consolidated dossier and hash metadata of a closed campaign
     Given a GET request to "/api/v1/plots/<plotId>/agronomic-dossiers/<campaignYear>" sent by "<actor>" with Accept application/json for a settled campaign
     When the API retrieves the sealed dossier
@@ -25,7 +25,7 @@ Feature: Final agronomic dossier query and export (Harvest)
       | plotId          | campaignYear | actor           |
       | plot-yarada-001 | 2026         | usr-farmer-0042 |
 
-  # Escenario 3: Acceso no autorizado a expediente de parcela ajena
+  # Scenario 3: Unauthorized access to another producer dossier
   Scenario Outline: Unauthorized access to another producer dossier
     Given a GET request to "/api/v1/plots/<plotId>/agronomic-dossiers/<campaignYear>" sent by "<actor>" for a plot the user does not own or supervise
     When the API checks the access
@@ -35,7 +35,7 @@ Feature: Final agronomic dossier query and export (Harvest)
       | plotId          | campaignYear | actor           |
       | plot-yarada-001 | 2026         | usr-farmer-0042 |
 
-  # Escenario 4: Campaña sin dossier sellado
+  # Scenario 4: Campaign without sealed dossier
   Scenario Outline: Campaign without sealed dossier
     Given a GET request to "/api/v1/plots/<plotId>/agronomic-dossiers/<campaignYear>" sent by "<actor>" for a campaign without a sealed dossier
     When the API searches the dossier

@@ -3,7 +3,7 @@ Feature: Territorial sector registration (Cooperative)
   I want to add a sector with a name via POST to /api/v1/sector-zones
   so I can extend the list of sectors of the license
 
-  # Escenario 1: Sector agregado
+  # Scenario 1: Sector added
   Scenario Outline: Sector added
     Given a POST request to "/api/v1/sector-zones" sent by "<actor>" from a technical manager with a license in force
     When the API records the sector
@@ -13,7 +13,7 @@ Feature: Territorial sector registration (Cooperative)
       | actor            |
       | usr-manager-0007 |
 
-  # Escenario 2: Nombre inválido
+  # Scenario 2: Invalid name
   Scenario Outline: Invalid name
     Given a POST request to "/api/v1/sector-zones" sent by "<actor>" with a blank, too short or too long name
     When the API validates the name
@@ -23,7 +23,7 @@ Feature: Territorial sector registration (Cooperative)
       | actor            |
       | usr-manager-0007 |
 
-  # Escenario 3: Nombre repetido
+  # Scenario 3: Repeated name
   Scenario Outline: Repeated name
     Given a POST request to "/api/v1/sector-zones" sent by "<actor>" with a name already in the list regardless of accents or case
     When the API validates its uniqueness
@@ -33,7 +33,7 @@ Feature: Territorial sector registration (Cooperative)
       | actor            |
       | usr-manager-0007 |
 
-  # Escenario 4: Solicitud sin autenticación
+  # Scenario 4: Request without authentication
   Scenario Outline: Request without authentication
     Given a POST request to "/api/v1/sector-zones" sent by "<actor>" without a valid access token
     When the API checks the identity
@@ -43,7 +43,7 @@ Feature: Territorial sector registration (Cooperative)
       | actor            |
       | anonymous-client |
 
-  # Escenario 5: Gestor sin licencia vigente
+  # Scenario 5: Manager without a license in force
   Scenario Outline: Manager without a license in force
     Given a POST request to "/api/v1/sector-zones" sent by "<actor>" from a user who is not a manager with a license in force
     When the API checks the access

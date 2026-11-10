@@ -3,7 +3,7 @@ Feature: Territorial risk matrix and sector traffic light query with GPS positio
   I want to list the member plots with optional latitude and longitude via GET to /api/v1/member-plots
   so I can show the traffic light of each sector and guide the manager in the field
 
-  # Escenario 1: Consulta exitosa de matriz territorial con ubicación del gestor
+  # Scenario 1: Successful territorial matrix with manager location
   Scenario Outline: Successful territorial matrix with manager location
     Given a GET request to "/api/v1/member-plots?latitude=<latitude>&longitude=<longitude>" sent by "<actor>" with latitude and longitude of the manager
     When the API groups the member plots by sector and locates the manager
@@ -14,7 +14,7 @@ Feature: Territorial risk matrix and sector traffic light query with GPS positio
       | latitude | longitude | actor            |
       | -18.0123 | -70.2456  | usr-manager-0007 |
 
-  # Escenario 2: Consulta territorial global sin coordenadas GPS
+  # Scenario 2: Global territorial query without GPS coordinates
   Scenario Outline: Global territorial query without GPS coordinates
     Given a GET request to "/api/v1/member-plots?latitude=<latitude>&longitude=<longitude>" sent by "<actor>" without coordinates
     When the API groups the member plots by sector
@@ -25,7 +25,7 @@ Feature: Territorial risk matrix and sector traffic light query with GPS positio
       | latitude | longitude | actor            |
       | -18.0123 | -70.2456  | usr-manager-0007 |
 
-  # Escenario 3: Rechazo por falta de credenciales de gestor técnico
+  # Scenario 3: Rejection without technical manager credentials
   Scenario Outline: Rejection without technical manager credentials
     Given a GET request to "/api/v1/member-plots?latitude=<latitude>&longitude=<longitude>" sent by "<actor>" from a user outside the cooperative technical team
     When the API checks the role

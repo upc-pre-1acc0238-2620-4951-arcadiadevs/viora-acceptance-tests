@@ -3,7 +3,7 @@ Feature: Payment notification webhook reception and processing (Subscription)
   I want to receive the payment notifications of Mercado Pago via POST to /api/v1/payment-notifications/mercado-pago
   so I can activate the producer subscription as soon as the payment is approved
 
-  # Escenario 1: Procesamiento exitoso de pago confirmado
+  # Scenario 1: Successful processing of an approved payment
   Scenario Outline: Successful processing of an approved payment
     Given a POST request to "/api/v1/payment-notifications/mercado-pago" sent by "<actor>" with a valid signature and an approved payment
     When the API authenticates the notification and reconciles the payment
@@ -14,7 +14,7 @@ Feature: Payment notification webhook reception and processing (Subscription)
       | actor                |
       | mercado-pago-webhook |
 
-  # Escenario 2: Firma de webhook inválida
+  # Scenario 2: Invalid webhook signature
   Scenario Outline: Invalid webhook signature
     Given a POST request to "/api/v1/payment-notifications/mercado-pago" sent by "<actor>" with a missing or altered signature
     When the API authenticates the notification

@@ -3,7 +3,7 @@ Feature: Multi-year plot harvest history query (Phenology)
   I want to request the harvest history of a plot from the API
   so I can render the interannual productive yield curve in the interface
 
-  # Escenario 1: Listado cronológico de cosechas
+  # Scenario 1: Chronological harvest history listing
   Scenario Outline: Chronological harvest history listing
     Given a GET request to "/api/v1/plots/<plotId>/harvest-records" with an authorized user token
     When the API retrieves historical productive records of the plot
@@ -14,7 +14,7 @@ Feature: Multi-year plot harvest history query (Phenology)
       | plotId            | expectedCampaignCount |
       | plot-jeronomo-001 | 4                     |
 
-  # Escenario 2: Parcela no encontrada
+  # Scenario 2: Plot not found for harvest history query
   Scenario Outline: Plot not found for harvest history query
     Given a GET request to "/api/v1/plots/<plotId>/harvest-records" with a non-existent identifier
     When the API queries the database

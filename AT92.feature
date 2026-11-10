@@ -3,7 +3,7 @@ Feature: Field note photo attachment (Orchard)
   I want to attach a photo to a note via PUT to /api/v1/plots/{plotId}/field-notes/{noteId}/photo
   so I can document an observation visually
 
-  # Escenario 1: Fotografía almacenada
+  # Scenario 1: Photo stored
   Scenario Outline: Photo stored
     Given a PUT request to "/api/v1/plots/<plotId>/field-notes/<noteId>/photo" sent by "<actor>" with a JPEG or PNG image up to 1 MiB
     When the API stores the image and replaces the previous one
@@ -14,7 +14,7 @@ Feature: Field note photo attachment (Orchard)
       | plotId          | noteId                               | actor           |
       | plot-yarada-001 | 6c8e0a2b-4d6f-4a8c-9e1b-3d5f7a9c1e23 | usr-farmer-0042 |
 
-  # Escenario 2: Imagen inválida
+  # Scenario 2: Invalid image
   Scenario Outline: Invalid image
     Given a PUT request to "/api/v1/plots/<plotId>/field-notes/<noteId>/photo" sent by "<actor>" with an empty, too large or non JPEG or PNG content
     When the API validates the image
@@ -24,7 +24,7 @@ Feature: Field note photo attachment (Orchard)
       | plotId          | noteId                               | actor           |
       | plot-yarada-001 | 6c8e0a2b-4d6f-4a8c-9e1b-3d5f7a9c1e23 | usr-farmer-0042 |
 
-  # Escenario 3: Parcela o nota no encontrada
+  # Scenario 3: Plot or note not found
   Scenario Outline: Plot or note not found
     Given a PUT request to "/api/v1/plots/<plotId>/field-notes/<noteId>/photo" sent by "<actor>" for an unknown plot or note
     When the API searches them

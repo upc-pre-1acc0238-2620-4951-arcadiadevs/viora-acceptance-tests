@@ -3,7 +3,7 @@ Feature: Cooperative invitation code preview (Membership)
   I want to preview what an invitation code offers via POST to /api/v1/cooperative-code-previews
   so I can show the conditions and the consent text before redeeming it
 
-  # Escenario 1: Vista previa exitosa
+  # Scenario 1: Successful preview
   Scenario Outline: Successful preview
     Given a POST request to "/api/v1/cooperative-code-previews" sent by "<actor>" with a valid code
     When the API evaluates the code without consuming it
@@ -14,7 +14,7 @@ Feature: Cooperative invitation code preview (Membership)
       | actor           |
       | usr-farmer-0042 |
 
-  # Escenario 2: Código no utilizable
+  # Scenario 2: Code that cannot be used
   Scenario Outline: Code that cannot be used
     Given a POST request to "/api/v1/cooperative-code-previews" sent by "<actor>" with an unknown, expired, redeemed or revoked code
     When the API evaluates the code
@@ -24,7 +24,7 @@ Feature: Cooperative invitation code preview (Membership)
       | actor           |
       | usr-farmer-0042 |
 
-  # Escenario 3: Productor con suscripción activa
+  # Scenario 3: Producer with an active subscription
   Scenario Outline: Producer with an active subscription
     Given a POST request to "/api/v1/cooperative-code-previews" sent by "<actor>" from a producer who already has an active subscription
     When the API checks the subscription
@@ -34,7 +34,7 @@ Feature: Cooperative invitation code preview (Membership)
       | actor           |
       | usr-farmer-0042 |
 
-  # Escenario 4: Solicitud sin autenticación
+  # Scenario 4: Request without authentication
   Scenario Outline: Request without authentication
     Given a POST request to "/api/v1/cooperative-code-previews" sent by "<actor>" without a valid access token
     When the API checks the identity
@@ -44,7 +44,7 @@ Feature: Cooperative invitation code preview (Membership)
       | actor            |
       | anonymous-client |
 
-  # Escenario 5: Usuario sin rol de productor
+  # Scenario 5: User without the producer role
   Scenario Outline: User without the producer role
     Given a POST request to "/api/v1/cooperative-code-previews" sent by "<actor>" from a user who is not a producer
     When the API checks the role
@@ -54,7 +54,7 @@ Feature: Cooperative invitation code preview (Membership)
       | actor            |
       | usr-manager-0007 |
 
-  # Escenario 6: Exceso de intentos fallidos
+  # Scenario 6: Too many failed attempts
   Scenario Outline: Too many failed attempts
     Given a POST request to "/api/v1/cooperative-code-previews" sent by "<actor>" after too many failed attempts
     When the API applies the attempt limit

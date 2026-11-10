@@ -3,7 +3,7 @@ Feature: Plot update and boundary rectification with optimistic locking (Orchard
   I want to send updated plot data via PUT with route parameter plotId, If-Match header and JSON body
   so I can rectify boundary coordinates, spacing or agronomic attributes while preventing concurrent collision
 
-  # Escenario 1: Actualización exitosa con control de concurrencia
+  # Scenario 1: Successful plot update with concurrency control
   Scenario Outline: Successful plot update with concurrency control
     Given a PUT request to "/api/v1/plots/<plotId>" with If-Match header "<ifMatch>" and body containing "<name>", "<cultivar>", <plantingYear>, "<spacing>", "<coordinates>" and "<irrigationType>"
     When the API validates ownership, verifies If-Match version, recalculates geodesic area and persists changes
@@ -14,7 +14,7 @@ Feature: Plot update and boundary rectification with optimistic locking (Orchard
       | plotId            | ifMatch  | name                 | cultivar | plantingYear | spacing | coordinates                                                                         | irrigationType |
       | plot-jeronomo-001 | "\"1\""  | San Jeronimo Rectified | CRIOLLA | 2018         | 7x5     | [[-70.25,-18.05],[-70.24,-18.05],[-70.24,-18.06],[-70.25,-18.06],[-70.25,-18.05]] | DRIP           |
 
-  # Escenario 2: Conflicto de concurrencia optimista por versión desactualizada
+  # Scenario 2: Optimistic concurrency conflict due to stale version
   Scenario Outline: Optimistic concurrency conflict due to stale version
     Given a PUT request to "/api/v1/plots/<plotId>" where If-Match header "<ifMatch>" does not match current version
     When the optimistic concurrency interceptor detects concurrent modification conflict
@@ -25,7 +25,7 @@ Feature: Plot update and boundary rectification with optimistic locking (Orchard
       | plotId            | ifMatch  |
       | plot-jeronomo-001 | "\"0\""  |
 
-  # Escenario 3: Parámetros inválidos o inconsistencia en linderos geométricos
+  # Scenario 3: Invalid parameters or inconsistent geometric boundaries
   Scenario Outline: Invalid parameters or inconsistent geometric boundaries
     Given a PUT request to "/api/v1/plots/<plotId>" with body containing unclosed coordinates or invalid spacing: "<coordinates>"
     When the contract validator processes the request body
@@ -36,7 +36,7 @@ Feature: Plot update and boundary rectification with optimistic locking (Orchard
       | plotId            | coordinates                       | reason            |
       | plot-jeronomo-001 | [[-70.25,-18.05],[-70.24,-18.05]] | unclosed polygon  |
 
-  # Escenario 4: Cuartel no encontrado en el inventario
+  # Scenario 4: Plot not found in inventory
   Scenario Outline: Plot not found in inventory
     Given a PUT request to "/api/v1/plots/<plotId>" with non-existent or archived identifier
     When the domain service queries the plot repository
@@ -46,7 +46,7 @@ Feature: Plot update and boundary rectification with optimistic locking (Orchard
       | plotId                |
       | plot-non-existent-999 |
 
-  # Escenario 5: Nombre duplicado (HTTP 409 Conflict)
+  # Scenario 5: Duplicated name
   Scenario Outline: Duplicated name
     Given a PUT request to "/api/v1/plots/<plotId>" sent by "<actor>" with a name already used by another plot of the producer
     When the API validates the name uniqueness

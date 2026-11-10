@@ -3,7 +3,7 @@ Feature: Plot field notes query (Orchard)
   I want to list the notes of a plot via GET to /api/v1/plots/{plotId}/field-notes
   so I can review the observations recorded on the plot
 
-  # Escenario 1: Listado de notas
+  # Scenario 1: Notes list
   Scenario Outline: Notes list
     Given a GET request to "/api/v1/plots/<plotId>/field-notes" sent by "<actor>" for an own plot
     When the API reads the notes
@@ -14,7 +14,7 @@ Feature: Plot field notes query (Orchard)
       | plotId          | actor           |
       | plot-yarada-001 | usr-farmer-0042 |
 
-  # Escenario 2: Parcela de otro productor
+  # Scenario 2: Plot of another producer
   Scenario Outline: Plot of another producer
     Given a GET request to "/api/v1/plots/<plotId>/field-notes" sent by "<actor>" for a plot of another producer
     When the API checks the ownership
@@ -24,7 +24,7 @@ Feature: Plot field notes query (Orchard)
       | plotId          | actor           |
       | plot-yarada-001 | usr-farmer-0042 |
 
-  # Escenario 3: Parcela no encontrada
+  # Scenario 3: Plot not found
   Scenario Outline: Plot not found
     Given a GET request to "/api/v1/plots/<plotId>/field-notes" sent by "<actor>" for an unknown plot
     When the API searches the plot

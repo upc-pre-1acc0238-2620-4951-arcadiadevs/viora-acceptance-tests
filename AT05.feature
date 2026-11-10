@@ -3,7 +3,7 @@ Feature: Partial profile update with phone validation (Profiles)
   I want to update the full name, phone or country of the profile via PATCH to /api/v1/profiles/{userId}
   so I can keep the contact data of the account current
 
-  # Escenario 1: Actualización exitosa
+  # Scenario 1: Successful update
   Scenario Outline: Successful update
     Given a PATCH request to "/api/v1/profiles/<userId>" sent by "<actor>" with a new full name or phone and country
     When the API validates and stores the changes
@@ -14,7 +14,7 @@ Feature: Partial profile update with phone validation (Profiles)
       | userId          | actor           |
       | usr-farmer-0042 | usr-farmer-0042 |
 
-  # Escenario 2: Teléfono inválido en actualización
+  # Scenario 2: Invalid phone in update
   Scenario Outline: Invalid phone in update
     Given a PATCH request to "/api/v1/profiles/<userId>" sent by "<actor>" with a phone outside the E.164 format
     When the API validates the phone
@@ -25,7 +25,7 @@ Feature: Partial profile update with phone validation (Profiles)
       | userId          | actor           |
       | usr-farmer-0042 | usr-farmer-0042 |
 
-  # Escenario 3: Permiso denegado sobre cuenta ajena
+  # Scenario 3: Permission denied on another account
   Scenario Outline: Permission denied on another account
     Given a PATCH request to "/api/v1/profiles/<userId>" sent by "<actor>" for a user different from the authenticated one
     When the API checks the ownership

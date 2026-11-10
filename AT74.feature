@@ -3,7 +3,7 @@ Feature: Account email verification (IAM)
   I want to send the verification code with the email via POST to /api/v1/auth/email-verifications
   so I can activate the account and obtain the session
 
-  # Escenario 1: Verificación exitosa
+  # Scenario 1: Successful verification
   Scenario Outline: Successful verification
     Given a POST request to "/api/v1/auth/email-verifications" sent by "<actor>" with the 6-digit code sent at sign-up
     When the API validates the code
@@ -13,7 +13,7 @@ Feature: Account email verification (IAM)
       | actor            |
       | anonymous-client |
 
-  # Escenario 2: Código incorrecto
+  # Scenario 2: Wrong code
   Scenario Outline: Wrong code
     Given a POST request to "/api/v1/auth/email-verifications" sent by "<actor>" with a wrong code
     When the API validates the code

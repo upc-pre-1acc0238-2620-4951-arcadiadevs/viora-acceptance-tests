@@ -3,7 +3,7 @@ Feature: Atomic institutional activation code redemption with quota and consent 
   I want to submit the corporate activation code provided by the farmer and their data sharing consent via POST to /api/v1/cooperative-code-redemptions
   so I can atomically validate the quota, affiliate the account to the cooperative and activate sponsored benefits without individual charge
 
-  # Escenario 1: Canje exitoso, validación de cuota y vinculación 1:N
+  # Scenario 1: Successful redemption, quota validation and 1:N linking
   Scenario Outline: Successful redemption, quota validation and 1:N linking
     Given a POST request to "/api/v1/cooperative-code-redemptions" with body containing invitationCode "<invitationCode>" and shareDataConsent <shareDataConsent> issued by an authenticated olive farmer
     When the API validates the code exists, is AVAILABLE, has not expired and the cooperative has hectare quota for the member surface
@@ -15,7 +15,7 @@ Feature: Atomic institutional activation code redemption with quota and consent 
       | invitationCode | shareDataConsent | farmerSurfaceHa |
       | COOP-7K2P      | true             | 4.5             |
 
-  # Escenario 2: Código inválido, expirado o revocado
+  # Scenario 2: Invalid, expired or revoked code
   Scenario Outline: Invalid, expired or revoked code
     Given a POST request to "/api/v1/cooperative-code-redemptions" with invitationCode "<invitationCode>" in status "<codeStatus>"
     When the service processes the redemption transaction
@@ -29,7 +29,7 @@ Feature: Atomic institutional activation code redemption with quota and consent 
       | COOP-EXP9      | EXPIRED    |
       | COOP-RVK4      | REVOKED    |
 
-  # Escenario 3: Productor ya vinculado a una cooperativa activa
+  # Scenario 3: Farmer already linked to an active cooperative
   Scenario Outline: Farmer already linked to an active cooperative
     Given a user "<userId>" with an active corporate affiliation trying to redeem another activation code "<invitationCode>"
     When the subscription aggregator verifies the single-link policy per campaign
@@ -40,7 +40,7 @@ Feature: Atomic institutional activation code redemption with quota and consent 
       | userId          | invitationCode |
       | usr-farmer-0042 | COOP-9QW3      |
 
-  # Escenario 4: Usuario sin rol de productor
+  # Scenario 4: User without the producer role
   Scenario Outline: User without the producer role
     Given a POST request to "/api/v1/cooperative-code-redemptions" sent by "<actor>" from a user who is not a producer
     When the API checks the role
@@ -50,7 +50,7 @@ Feature: Atomic institutional activation code redemption with quota and consent 
       | actor            |
       | usr-manager-0007 |
 
-  # Escenario 5: Exceso de intentos fallidos
+  # Scenario 5: Too many failed attempts
   Scenario Outline: Too many failed attempts
     Given a POST request to "/api/v1/cooperative-code-redemptions" sent by "<actor>" after too many failed redemption attempts
     When the API applies the attempt limit

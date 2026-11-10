@@ -3,7 +3,7 @@ Feature: Assistant daily summary query (Assistant)
   I want to request the daily summary of the field or of a plot via GET to /api/v1/assistant/daily-summary
   so I can show the priorities of the day
 
-  # Escenario 1: Resumen diario del campo
+  # Scenario 1: Field daily summary
   Scenario Outline: Field daily summary
     Given a GET request to "/api/v1/assistant/daily-summary?plotId=<plotId>" sent by "<actor>" without plot
     When the API retrieves or writes the summary of the day
@@ -14,7 +14,7 @@ Feature: Assistant daily summary query (Assistant)
       | plotId          | actor           |
       | plot-yarada-001 | usr-farmer-0042 |
 
-  # Escenario 2: Reutilización del resumen en el mismo día
+  # Scenario 2: Summary reused on the same day
   Scenario Outline: Summary reused on the same day
     Given a GET request to "/api/v1/assistant/daily-summary?plotId=<plotId>" sent by "<actor>" for a summary written today with the same figures and language
     When the producer requests it again
@@ -25,7 +25,7 @@ Feature: Assistant daily summary query (Assistant)
       | plotId          | actor           |
       | plot-yarada-001 | usr-farmer-0042 |
 
-  # Escenario 3: Productor sin parcelas activas
+  # Scenario 3: Producer without active plots
   Scenario Outline: Producer without active plots
     Given a GET request to "/api/v1/assistant/daily-summary?plotId=<plotId>" sent by "<actor>" from a producer without active plots
     When the API gathers the field figures
@@ -35,7 +35,7 @@ Feature: Assistant daily summary query (Assistant)
       | plotId          | actor           |
       | plot-yarada-001 | usr-farmer-0042 |
 
-  # Escenario 4: Límite de uso excedido
+  # Scenario 4: Usage limit exceeded
   Scenario Outline: Usage limit exceeded
     Given a GET request to "/api/v1/assistant/daily-summary?plotId=<plotId>" sent by "<actor>" when the summary must be written for a producer without quota
     When the API applies the usage limit
@@ -46,7 +46,7 @@ Feature: Assistant daily summary query (Assistant)
       | plotId          | actor           |
       | plot-yarada-001 | usr-farmer-0042 |
 
-  # Escenario 5: Identificador inválido
+  # Scenario 5: Invalid identifier
   Scenario Outline: Invalid identifier
     Given a GET request to "/api/v1/assistant/daily-summary?plotId=<plotId>" sent by "<actor>" with a malformed plot identifier
     When the API validates the parameter
@@ -56,7 +56,7 @@ Feature: Assistant daily summary query (Assistant)
       | plotId          | actor           |
       | plot-yarada-001 | usr-farmer-0042 |
 
-  # Escenario 6: Acceso denegado o parcela inexistente
+  # Scenario 6: Access denied or unknown plot
   Scenario Outline: Access denied or unknown plot
     Given a GET request to "/api/v1/assistant/daily-summary?plotId=<plotId>" sent by "<actor>" for a foreign plot, a producer without an active plan or an unknown plot
     When the API checks the access

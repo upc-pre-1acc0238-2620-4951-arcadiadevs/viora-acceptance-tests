@@ -3,7 +3,7 @@ Feature: Manager master code redemption for technical manager activation (Member
   I want to redeem the activation code of the manager via POST to /api/v1/manager-code-redemptions
   so I can put the authenticated technical manager in charge of the license
 
-  # Escenario 1: Canje exitoso del código maestro
+  # Scenario 1: Successful master code redemption
   Scenario Outline: Successful master code redemption
     Given a POST request to "/api/v1/manager-code-redemptions" sent by "<actor>" with a valid code
     When the API consumes the code and assigns the license to the manager
@@ -13,7 +13,7 @@ Feature: Manager master code redemption for technical manager activation (Member
       | actor            |
       | usr-manager-0007 |
 
-  # Escenario 2: Código no canjeable
+  # Scenario 2: Code that cannot be redeemed
   Scenario Outline: Code that cannot be redeemed
     Given a POST request to "/api/v1/manager-code-redemptions" sent by "<actor>" with an unknown, expired, used or revoked code
     When the API processes the redemption
@@ -23,7 +23,7 @@ Feature: Manager master code redemption for technical manager activation (Member
       | actor            |
       | usr-manager-0007 |
 
-  # Escenario 3: Gestor con licencia vigente
+  # Scenario 3: Manager with a license in force
   Scenario Outline: Manager with a license in force
     Given a POST request to "/api/v1/manager-code-redemptions" sent by "<actor>" from a manager already in charge of a license in force
     When the API checks the manager licenses
@@ -33,7 +33,7 @@ Feature: Manager master code redemption for technical manager activation (Member
       | actor            |
       | usr-manager-0007 |
 
-  # Escenario 4: Solicitud sin autenticación
+  # Scenario 4: Request without authentication
   Scenario Outline: Request without authentication
     Given a POST request to "/api/v1/manager-code-redemptions" sent by "<actor>" without a valid access token
     When the API checks the identity
@@ -43,7 +43,7 @@ Feature: Manager master code redemption for technical manager activation (Member
       | actor            |
       | anonymous-client |
 
-  # Escenario 5: Usuario sin rol de gestor técnico
+  # Scenario 5: User without the technical manager role
   Scenario Outline: User without the technical manager role
     Given a POST request to "/api/v1/manager-code-redemptions" sent by "<actor>" from a user who is not a technical manager
     When the API checks the role
@@ -53,7 +53,7 @@ Feature: Manager master code redemption for technical manager activation (Member
       | actor           |
       | usr-farmer-0042 |
 
-  # Escenario 6: Exceso de intentos fallidos
+  # Scenario 6: Too many failed attempts
   Scenario Outline: Too many failed attempts
     Given a POST request to "/api/v1/manager-code-redemptions" sent by "<actor>" after too many failed attempts
     When the API applies the attempt limit

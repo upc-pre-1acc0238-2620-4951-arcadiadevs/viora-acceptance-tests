@@ -3,7 +3,7 @@ Feature: User authentication and access token issuance with role (IAM)
   I want to authenticate with email and password via POST to /api/v1/auth/sign-in
   so I can obtain the access and refresh tokens of the session
 
-  # Escenario 1: Autenticación exitosa
+  # Scenario 1: Successful authentication
   Scenario Outline: Successful authentication
     Given a POST request to "/api/v1/auth/sign-in" sent by "<actor>" with valid email and password
     When the API verifies the credentials
@@ -14,7 +14,7 @@ Feature: User authentication and access token issuance with role (IAM)
       | actor            |
       | anonymous-client |
 
-  # Escenario 2: Credenciales incorrectas
+  # Scenario 2: Wrong credentials
   Scenario Outline: Wrong credentials
     Given a POST request to "/api/v1/auth/sign-in" sent by "<actor>" with a wrong password or an unregistered email
     When the API verifies the credentials

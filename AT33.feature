@@ -3,7 +3,7 @@ Feature: Dynamic API contract generation and OpenAPI interactive documentation (
   I want to integrate the OpenAPI 3.0 contract generator in the backend
   so I can expose an interactive Swagger UI console and JSON schemas documenting all system endpoints
 
-  # Escenario 1: Exposición de consola Swagger UI
+  # Scenario 1: Swagger UI interactive console exposure
   Scenario Outline: Swagger UI interactive console exposure
     Given the backend platform running in "<environment>"
     When a developer accesses "<swaggerPath>"
@@ -13,7 +13,7 @@ Feature: Dynamic API contract generation and OpenAPI interactive documentation (
       | environment | swaggerPath       | expectedTitle           |
       | local       | /swagger-ui.html  | Viora Agronomic Platform |
 
-  # Escenario 2: Generación del esquema OpenAPI en formato JSON
+  # Scenario 2: OpenAPI JSON specification generation
   Scenario Outline: OpenAPI JSON specification generation
     Given a GET request to "/v3/api-docs"
     When the specification contract endpoint is queried

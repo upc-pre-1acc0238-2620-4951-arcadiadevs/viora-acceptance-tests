@@ -3,7 +3,7 @@ Feature: Member plot sector assignment query (Cooperative)
   I want to list the sectors of the plots with an optional status filter via GET to /api/v1/plot-sector-assignments
   so I can group the plots by sector and find the ones pending confirmation
 
-  # Escenario 1: Consulta de sectores por parcela
+  # Scenario 1: Sector by plot query
   Scenario Outline: Sector by plot query
     Given a GET request to "/api/v1/plot-sector-assignments?status=<status>" sent by "<actor>" from a technical manager or a member
     When the API applies the scope of the user
@@ -14,7 +14,7 @@ Feature: Member plot sector assignment query (Cooperative)
       | status    | actor            |
       | available | usr-manager-0007 |
 
-  # Escenario 2: Estado desconocido
+  # Scenario 2: Unknown status
   Scenario Outline: Unknown status
     Given a GET request to "/api/v1/plot-sector-assignments?status=<status>" sent by "<actor>" with an unknown status filter
     When the API validates the parameter
@@ -24,7 +24,7 @@ Feature: Member plot sector assignment query (Cooperative)
       | status    | actor            |
       | available | usr-manager-0007 |
 
-  # Escenario 3: Usuario sin licencia asociada
+  # Scenario 3: User without an associated license
   Scenario Outline: User without an associated license
     Given a GET request to "/api/v1/plot-sector-assignments?status=<status>" sent by "<actor>" from a user who reaches no license
     When the API checks the access
@@ -34,7 +34,7 @@ Feature: Member plot sector assignment query (Cooperative)
       | status    | actor            |
       | available | usr-manager-0007 |
 
-  # Escenario 4: Solicitud sin autenticación
+  # Scenario 4: Request without authentication
   Scenario Outline: Request without authentication
     Given a GET request to "/api/v1/plot-sector-assignments?status=<status>" sent by "<actor>" without a valid access token
     When the API checks the identity

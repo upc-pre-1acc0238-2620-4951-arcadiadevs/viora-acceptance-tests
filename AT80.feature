@@ -3,7 +3,7 @@ Feature: Subscription payment preparation (Subscription)
   I want to prepare or recover the payment with an Idempotency-Key header via POST to /api/v1/subscriptions/{id}/checkouts
   so I can let the producer complete the payment without duplicating it
 
-  # Escenario 1: Preparación del pago
+  # Scenario 1: Payment preparation
   Scenario Outline: Payment preparation
     Given a POST request to "/api/v1/subscriptions/<id>/checkouts" sent by "<actor>" for an own subscription pending payment
     When the API prepares or recovers the payment
@@ -14,7 +14,7 @@ Feature: Subscription payment preparation (Subscription)
       | id                                   | actor           |
       | 3f6b2c1e-9a4d-4e8b-b1c2-7d5e6f8a9b01 | usr-farmer-0042 |
 
-  # Escenario 2: Suscripción no disponible
+  # Scenario 2: Unavailable subscription
   Scenario Outline: Unavailable subscription
     Given a POST request to "/api/v1/subscriptions/<id>/checkouts" sent by "<actor>" for a subscription that does not belong to the producer
     When the API searches the subscription
@@ -24,7 +24,7 @@ Feature: Subscription payment preparation (Subscription)
       | id                                   | actor           |
       | 3f6b2c1e-9a4d-4e8b-b1c2-7d5e6f8a9b01 | usr-farmer-0042 |
 
-  # Escenario 3: Clave de idempotencia en conflicto
+  # Scenario 3: Conflicting idempotency key
   Scenario Outline: Conflicting idempotency key
     Given a POST request to "/api/v1/subscriptions/<id>/checkouts" sent by "<actor>" with a key already used in an incompatible operation
     When the API evaluates the key

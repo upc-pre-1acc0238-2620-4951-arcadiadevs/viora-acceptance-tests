@@ -3,7 +3,7 @@ Feature: Periodic session token renewal through refresh token (IAM)
   I want to send a valid refresh token via POST to /api/v1/auth/refresh-tokens
   so I can renew the session without signing in again
 
-  # Escenario 1: Renovación exitosa de token
+  # Scenario 1: Successful token renewal
   Scenario Outline: Successful token renewal
     Given a POST request to "/api/v1/auth/refresh-tokens" sent by "<actor>" with a valid and not revoked refresh token
     When the API rotates the session tokens
@@ -14,7 +14,7 @@ Feature: Periodic session token renewal through refresh token (IAM)
       | actor           |
       | usr-farmer-0042 |
 
-  # Escenario 2: Refresh token expirado o revocado
+  # Scenario 2: Expired or revoked refresh token
   Scenario Outline: Expired or revoked refresh token
     Given a POST request to "/api/v1/auth/refresh-tokens" sent by "<actor>" with an expired or revoked refresh token
     When the API validates the refresh token
