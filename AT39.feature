@@ -64,3 +64,25 @@ Feature: Formal harvest settlement and season-end delivery balance (Harvest)
     Examples:
       | plotId          | actor           |
       | plot-yarada-001 | usr-farmer-0042 |
+
+  # Scenario 7: Settlement with discarded olives
+  Scenario Outline: Settlement with discarded olives
+    Given a POST request to "/api/v1/plots/<plotId>/harvest-settlements" sent by "<actor>" with <greenOlivesKg>, <blackOlivesKg> and an optional discardOlivesKg <discardOlivesKg>
+    When the API adds the discarded olives to the harvest total
+    Then the response status is 201
+    And the response returns totalYieldKg <expectedTotalKg> and discardOlivesKg <expectedDiscardKg> in the breakdown
+
+    Examples:
+      | plotId            | actor           | greenOlivesKg | blackOlivesKg | discardOlivesKg | expectedTotalKg | expectedDiscardKg |
+      | plot-jeronomo-001 | usr-farmer-0042 | 4200.0        | 8100.0        | 300.0           | 12600.0         | 300.0             |
+      | plot-jeronomo-001 | usr-farmer-0042 | 4200.0        | 8100.0        | null            | 12300.0         | 0.0               |
+
+  # Scenario 8: Negative discarded olives
+  Scenario Outline: Negative discarded olives
+    Given a POST request to "/api/v1/plots/<plotId>/harvest-settlements" sent by "<actor>" with a negative discardOlivesKg <discardOlivesKg>
+    When the domain validator processes the payload
+    Then the response status is 400
+
+    Examples:
+      | plotId            | actor           | discardOlivesKg |
+      | plot-jeronomo-001 | usr-farmer-0042 | -50.0           |
