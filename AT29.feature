@@ -34,3 +34,14 @@ Feature: Territorial risk matrix and sector traffic light query with GPS positio
     Examples:
       | latitude | longitude | actor           |
       | -18.0123 | -70.2456  | usr-farmer-0042 |
+
+  # Scenario 4: Member producer identification of each plot
+  Scenario Outline: Member producer identification of each plot
+    Given a GET request to "/api/v1/member-plots" sent by "<actor>" with the technical manager role
+    When the API builds each plot of the response
+    Then the response status is 200
+    And each plot returns producerId, producerName and the masked memberCode "<memberCode>"
+
+    Examples:
+      | actor            | memberCode |
+      | usr-manager-0007 | COOP-••2Q  |
