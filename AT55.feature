@@ -24,3 +24,15 @@ Feature: Detailed harvest settlement query by individual campaign year (Harvest)
       | plotId                | campaignYear |
       | plot-non-existent-999 | 2025         |
       | plot-jeronomo-001     | 2030         |
+
+  # Scenario 3: Settlement detail with discarded olives
+  Scenario Outline: Settlement detail with discarded olives
+    Given a GET request to "/api/v1/plots/<plotId>/harvest-settlements/<campaignYear>" for a campaign settled "<discardState>"
+    When the API reads the formal settlement
+    Then the response status is 200
+    And the response returns discardOlivesKg <expectedDiscardKg> within the breakdown
+
+    Examples:
+      | plotId            | campaignYear | discardState             | expectedDiscardKg |
+      | plot-jeronomo-001 | 2025         | with discarded olives    | 300.0             |
+      | plot-jeronomo-001 | 2024         | without discarded olives | 0.0               |
