@@ -3,7 +3,7 @@ Feature: Detailed query of agronomic and spatial plot information (Orchard)
   I want to request the details of a plot by its ID
   so I can display the complete agronomic profile of the plot in the user interface
 
-  # Escenario 1: Obtención de detalle de parcela
+  # Scenario 1: Retrieve plot details successfully
   Scenario Outline: Retrieve plot details successfully
     Given a GET request to "/api/v1/plots/<plotId>" with an authorized token
     When the API verifies ownership and retrieves the plot
@@ -14,7 +14,7 @@ Feature: Detailed query of agronomic and spatial plot information (Orchard)
       | plotId            | plotName          | variety |
       | plot-jeronomo-001 | San Jeronimo Plot | CRIOLLA |
 
-  # Escenario 2: Parcela inexistente
+  # Scenario 2: Non-existent plot query
   Scenario Outline: Non-existent plot query
     Given a GET request to "/api/v1/plots/<plotId>" with a non-existent identifier
     When the API searches the database

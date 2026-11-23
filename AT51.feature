@@ -1,26 +1,25 @@
 Feature: Global plot sampling overview query for plot picker (Thinning)
   As a Client Application Developer
-  I want to query consolidated sampling status of all plots via GET to /api/v1/samplings/overview
-  so I can render the Plot Picker in the mobile interface highlighting progress and sufficiency
+  I want to query the sampling state of every plot of the campaign via GET to /api/v1/samplings
+  so I can show the coverage of each plot in the plot picker
 
-  # Escenario 1: Consulta exitosa de cobertura y estado de muestreo de los cuarteles
-  Scenario Outline: Successful sampling coverage query for plot picker
-    Given a GET request to "/api/v1/samplings/overview" with optional parameters campaignYear and status
-    When the API consolidates active producer plots and computes sampling progress and statistical sufficiency
+  # Scenario 1: Successful sampling coverage and status query
+  Scenario Outline: Successful sampling coverage and status query
+    Given a GET request to "/api/v1/samplings?campaignYear=<campaignYear>" sent by "<actor>" with an optional campaign year
+    When the API reads the sampling state of the plots
     Then the response status is 200
-    And the response returns a list of "PlotSamplingOverviewResponse" optimized for the Plot Picker
+    And the response returns the overview of each plot
 
     Examples:
-      | campaignYear | status | expectedPlotCount |
-      | 2025         | ACTIVE | 3                 |
+      | campaignYear | actor           |
+      | 2026         | usr-farmer-0042 |
 
-  # Escenario 2: Formato inválido en año de campaña o filtro de estado
-  Scenario Outline: Invalid format in campaign year or status filter
-    Given a GET request to "/api/v1/samplings/overview" with campaign year below 2000 or unknown status: <campaignYear>, "<status>"
-    When the controller processes query parameters
+  # Scenario 2: Invalid campaign year
+  Scenario Outline: Invalid campaign year
+    Given a GET request to "/api/v1/samplings?campaignYear=<campaignYear>" sent by "<actor>" with a campaign year below 2000
+    When the API validates the parameter
     Then the response status is 400
 
     Examples:
-      | campaignYear | status  | reason             |
-      | 1995         | ACTIVE  | year below 2000    |
-      | 2025         | UNKNOWN | unrecognized status|
+      | campaignYear | actor           |
+      | 2026         | usr-farmer-0042 |

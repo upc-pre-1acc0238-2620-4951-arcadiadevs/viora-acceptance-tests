@@ -3,7 +3,7 @@ Feature: Plot inventory listing and incremental delta synchronization (Orchard)
   I want to query the plot inventory with timestamp support
   so I can update the local SQLite database via efficient delta synchronization
 
-  # Escenario 1: Consulta y sincronización incremental
+  # Scenario 1: Query and incremental synchronization
   Scenario Outline: Query and incremental synchronization
     Given a GET request to "/api/v1/plots" with optional parameter "?updatedSince=<timestamp>"
     When the API filters active user plots modified after said timestamp
@@ -15,7 +15,7 @@ Feature: Plot inventory listing and incremental delta synchronization (Orchard)
       | 2026-09-01T00:00:00Z | 3             |
       | 2026-10-01T12:00:00Z | 1             |
 
-  # Escenario 2: Acceso no autorizado a predios ajenos
+  # Scenario 2: Unauthorized access to plots of another user
   Scenario Outline: Unauthorized access to plots of another user
     Given a GET request to "/api/v1/plots" with parameter "?userId=<targetUserId>" belonging to another farmer without technical manager privileges
     When the API validates access permissions

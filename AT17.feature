@@ -3,7 +3,7 @@ Feature: Inventory query of virtual sensor nodes linked to plot (Telemetry)
   I want to request the listing of virtual nodes linked to a plot from the API
   so I can display their operational status and latest simulated telemetry reading in the UI
 
-  # Escenario 1: Listado de dispositivos vinculados
+  # Scenario 1: Listing linked virtual IoT devices
   Scenario Outline: Listing linked virtual IoT devices
     Given a GET request to "/api/v1/plots/<plotId>/iot-devices" with an authorized user token
     When the API retrieves devices associated with the plot
@@ -14,7 +14,7 @@ Feature: Inventory query of virtual sensor nodes linked to plot (Telemetry)
       | plotId            | expectedDeviceCount |
       | plot-jeronomo-001 | 2                   |
 
-  # Escenario 2: Parcela inexistente
+  # Scenario 2: Plot not found for IoT device inventory query
   Scenario Outline: Plot not found for IoT device inventory query
     Given a GET request with a non-existent plotId: "<plotId>"
     When the API queries the persistence layer

@@ -1,36 +1,35 @@
 Feature: Temporary postponement of agroclimatic incident notifications (Telemetry)
   As a Client Application Developer
-  I want to postpone incident notifications via POST to /api/v1/agroclimatic-incidents/{incidentId}/snooze with snoozeHours
-  so I can temporarily silence push alerts during the defined window without resolving the alert
+  I want to postpone the notifications of an incident for some hours via POST to /api/v1/agroclimatic-incidents/{incidentId}/postponements
+  so I can silence the alerts temporarily without resolving the incident
 
-  # Escenario 1: Postergación exitosa de notificaciones del incidente
-  Scenario Outline: Successful postponement of incident notifications
-    Given a POST request to "/api/v1/agroclimatic-incidents/<incidentId>/snooze" with snoozeHours between 1 and 72: <snoozeHours>
-    When the API validates incident status, calculates snooze expiration and suspends push dispatches
+  # Scenario 1: Successful incident notification postponement
+  Scenario Outline: Successful incident notification postponement
+    Given a POST request to "/api/v1/agroclimatic-incidents/<incidentId>/postponements" sent by "<actor>" with snooze hours between 1 and 72
+    When the API postpones the incident
     Then the response status is 200
-    And the response returns "AgroclimaticIncidentResponse" with status "SNOOZED" and scheduled "snoozeUntil"
+    And the incident is SNOOZED until the scheduled date
 
     Examples:
-      | incidentId     | snoozeHours |
-      | inc-frost-2026 | 6           |
+      | incidentId     | actor           |
+      | inc-frost-0003 | usr-farmer-0042 |
 
-  # Escenario 2: Duración de postergación fuera de rango permitido
-  Scenario Outline: Snooze duration outside permissible range
-    Given a POST request with snoozeHours less than 1 or greater than 72: <snoozeHours>
-    When the API validates requested hours
+  # Scenario 2: Postponement duration out of range
+  Scenario Outline: Postponement duration out of range
+    Given a POST request to "/api/v1/agroclimatic-incidents/<incidentId>/postponements" sent by "<actor>" with snooze hours below 1 or above 72
+    When the API validates the duration
     Then the response status is 400
 
     Examples:
-      | incidentId     | snoozeHours | reason                   |
-      | inc-frost-2026 | 0           | snooze hours below min 1 |
-      | inc-frost-2026 | 80          | snooze hours above max 72|
+      | incidentId     | actor           |
+      | inc-frost-0003 | usr-farmer-0042 |
 
-  # Escenario 3: Incidente no encontrado
-  Scenario Outline: Incident not found for postponement
-    Given a POST request to "/api/v1/agroclimatic-incidents/<incidentId>/snooze" with non-existent incidentId
-    When the service queries the incident repository
+  # Scenario 3: Incident not found
+  Scenario Outline: Incident not found
+    Given a POST request to "/api/v1/agroclimatic-incidents/<incidentId>/postponements" sent by "<actor>" for an unknown incident
+    When the API searches the incident
     Then the response status is 404
 
     Examples:
-      | incidentId            | snoozeHours |
-      | inc-non-existent-9999 | 12          |
+      | incidentId     | actor           |
+      | inc-frost-0003 | usr-farmer-0042 |

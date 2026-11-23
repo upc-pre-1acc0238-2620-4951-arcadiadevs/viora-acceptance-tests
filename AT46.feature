@@ -3,7 +3,7 @@ Feature: Global agroclimatic incidents query with counters and filtering (Teleme
   I want to query the general incident list via GET to /api/v1/agroclimatic-incidents with status and pagination filters
   so I can populate the mobile app alert center and display territorial severity counters
 
-  # Escenario 1: Consulta paginada exitosa con contadores de severidad
+  # Scenario 1: Paginated incident query with severity counters
   Scenario Outline: Paginated incident query with severity counters
     Given a GET request to "/api/v1/agroclimatic-incidents" with optional query parameters activeOnly, status, page and size
     When the API queries the telemetry context and evaluates frost, heatwave and water stress incidents
@@ -14,7 +14,7 @@ Feature: Global agroclimatic incidents query with counters and filtering (Teleme
       | activeOnly | status | page | size | expectedCritical | expectedWarning |
       | true       | OPEN   | 0    | 10   | 1                | 2               |
 
-  # Escenario 2: Parámetros de consulta con formato inválido
+  # Scenario 2: Invalid query parameter format for incident query
   Scenario Outline: Invalid query parameter format for incident query
     Given a GET request to "/api/v1/agroclimatic-incidents" with an unallowed status or negative pagination: "<status>", <page>
     When the transport layer validates query parameters

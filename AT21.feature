@@ -3,7 +3,7 @@ Feature: Annual campaign harvest settlement for productive auditing (Phenology)
   I want to send harvested kilograms at the close of the season to the API
   so I can record annual plot yield and feed the BBI alternation index calculation
 
-  # Escenario 1: Asentamiento exitoso de cosecha
+  # Scenario 1: Successful harvest settlement
   Scenario Outline: Successful harvest settlement
     Given a POST request to "/api/v1/plots/<plotId>/harvest-records" with body containing <campaignYear>, <totalYieldKg>, <greenKg> and <blackKg>
     When the API validates plot ownership, verifies quality sum matches total, and persists the record
@@ -14,7 +14,7 @@ Feature: Annual campaign harvest settlement for productive auditing (Phenology)
       | plotId            | campaignYear | totalYieldKg | greenKg | blackKg |
       | plot-jeronomo-001 | 2025         | 12500        | 4500    | 8000    |
 
-  # Escenario 2: Campaña ya registrada previamente
+  # Scenario 2: Campaign year already recorded previously
   Scenario Outline: Campaign year already recorded previously
     Given a POST request to "/api/v1/plots/<plotId>/harvest-records" for an already settled campaign year <campaignYear>
     When the API checks the existence of the agricultural year
@@ -24,7 +24,7 @@ Feature: Annual campaign harvest settlement for productive auditing (Phenology)
       | plotId            | campaignYear |
       | plot-jeronomo-001 | 2024         |
 
-  # Escenario 3: Valores de cosecha inconsistentes
+  # Scenario 3: Inconsistent harvest values or future campaign year
   Scenario Outline: Inconsistent harvest values or future campaign year
     Given a POST request to "/api/v1/plots/<plotId>/harvest-records" with negative yield or future year: <campaignYear>, <totalYieldKg>
     When the API validates numerical fields

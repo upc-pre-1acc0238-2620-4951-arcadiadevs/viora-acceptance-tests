@@ -3,7 +3,7 @@ Feature: Statistical representativeness and sampling status query (Thinning)
   I want to request sampling representativeness status from the API
   so I can notify the user whether enough trees have been evaluated to issue reliable prescriptions
 
-  # Escenario 1: Consulta de cobertura de muestreos
+  # Scenario 1: Sampling coverage and sufficiency query
   Scenario Outline: Sampling coverage and sufficiency query
     Given a GET request to "/api/v1/plots/<plotId>/samplings" with authorized token
     When the API consolidates trees evaluated in the active campaign
@@ -15,7 +15,7 @@ Feature: Statistical representativeness and sampling status query (Thinning)
       | plot-jeronomo-001 | 6                    | true               |
       | plot-scarce-002   | 3                    | false              |
 
-  # Escenario 2: Parcela no encontrada
+  # Scenario 2: Plot not found for sampling status query
   Scenario Outline: Plot not found for sampling status query
     Given a GET request with an invalid or non-existent plotId: "<plotId>"
     When the API searches persistence

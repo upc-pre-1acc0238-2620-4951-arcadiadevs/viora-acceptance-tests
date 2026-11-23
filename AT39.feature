@@ -3,7 +3,7 @@ Feature: Formal harvest settlement and season-end delivery balance (Harvest)
   I want to submit formal harvest settlement via POST to /api/v1/plots/{plotId}/harvest-settlements
   so I can record the official scale delivery, compute prescription balance and freeze the interannual stabilization curve
 
-  # Escenario 1: Asentamiento exitoso de liquidación de cosecha con balance y estabilización
+  # Scenario 1: Successful harvest settlement with balance and stabilization
   Scenario Outline: Successful harvest settlement with balance and stabilization
     Given a POST request to "/api/v1/plots/<plotId>/harvest-settlements" with body containing <campaignYear>, <greenOlivesKg>, <blackOlivesKg>, <commercialFruitsPerKg> and "<notes>"
     When the API validates ownership, verifies positive kilograms, computes thinning balance and calculates alternation stabilization
@@ -14,7 +14,7 @@ Feature: Formal harvest settlement and season-end delivery balance (Harvest)
       | plotId            | campaignYear | greenOlivesKg | blackOlivesKg | commercialFruitsPerKg | notes                    |
       | plot-jeronomo-001 | 2025         | 4200.0        | 8100.0        | 220                   | Final mill delivery cert |
 
-  # Escenario 2: Parámetros inválidos o inconsistencia en pesajes
+  # Scenario 2: Invalid parameters or weight inconsistency in settlement
   Scenario Outline: Invalid parameters or weight inconsistency in settlement
     Given a POST request with negative weight or invalid campaign year: <campaignYear>, <greenOlivesKg>, <blackOlivesKg>
     When the domain validator processes the payload
@@ -25,7 +25,7 @@ Feature: Formal harvest settlement and season-end delivery balance (Harvest)
       | plot-jeronomo-001 | 2025         | -100.0        | 500.0         | negative green olive |
       | plot-jeronomo-001 | 1990         | 1000.0        | 1000.0        | year out of range    |
 
-  # Escenario 3: Parcela no encontrada o inactiva
+  # Scenario 3: Plot not found or inactive for settlement
   Scenario Outline: Plot not found or inactive for settlement
     Given a POST request with a non-existent plotId: "<plotId>"
     When the API searches the repository
@@ -35,7 +35,7 @@ Feature: Formal harvest settlement and season-end delivery balance (Harvest)
       | plotId                | campaignYear |
       | plot-non-existent-999 | 2025         |
 
-  # Escenario 4: Conflicto por campaña ya liquidada previamente
+  # Scenario 4: Conflict when settlement already exists for campaign year
   Scenario Outline: Conflict when settlement already exists for campaign year
     Given a POST request for a campaign year already settled and immutable: <campaignYear>
     When the application service validates the annual closure uniqueness rule
@@ -44,3 +44,45 @@ Feature: Formal harvest settlement and season-end delivery balance (Harvest)
     Examples:
       | plotId            | campaignYear |
       | plot-jeronomo-001 | 2024         |
+
+  # Scenario 5: Plot of another producer
+  Scenario Outline: Plot of another producer
+    Given a POST request to "/api/v1/plots/<plotId>/harvest-settlements" sent by "<actor>" for a plot that does not belong to the requester
+    When the API checks the ownership
+    Then the response status is 403
+
+    Examples:
+      | plotId          | actor           |
+      | plot-yarada-001 | usr-farmer-0042 |
+
+  # Scenario 6: Reused idempotency key
+  Scenario Outline: Reused idempotency key
+    Given a POST request to "/api/v1/plots/<plotId>/harvest-settlements" sent by "<actor>" with an Idempotency-Key header already used for another plot or campaign
+    When the API evaluates the key
+    Then the response status is 422
+
+    Examples:
+      | plotId          | actor           |
+      | plot-yarada-001 | usr-farmer-0042 |
+
+  # Scenario 7: Settlement with discarded olives
+  Scenario Outline: Settlement with discarded olives
+    Given a POST request to "/api/v1/plots/<plotId>/harvest-settlements" sent by "<actor>" with <greenOlivesKg>, <blackOlivesKg> and an optional discardOlivesKg <discardOlivesKg>
+    When the API adds the discarded olives to the harvest total
+    Then the response status is 201
+    And the response returns totalYieldKg <expectedTotalKg> and discardOlivesKg <expectedDiscardKg> in the breakdown
+
+    Examples:
+      | plotId            | actor           | greenOlivesKg | blackOlivesKg | discardOlivesKg | expectedTotalKg | expectedDiscardKg |
+      | plot-jeronomo-001 | usr-farmer-0042 | 4200.0        | 8100.0        | 300.0           | 12600.0         | 300.0             |
+      | plot-jeronomo-001 | usr-farmer-0042 | 4200.0        | 8100.0        | null            | 12300.0         | 0.0               |
+
+  # Scenario 8: Negative discarded olives
+  Scenario Outline: Negative discarded olives
+    Given a POST request to "/api/v1/plots/<plotId>/harvest-settlements" sent by "<actor>" with a negative discardOlivesKg <discardOlivesKg>
+    When the domain validator processes the payload
+    Then the response status is 400
+
+    Examples:
+      | plotId            | actor           | discardOlivesKg |
+      | plot-jeronomo-001 | usr-farmer-0042 | -50.0           |

@@ -3,7 +3,7 @@ Feature: Environmental and soil telemetry time-series query (Telemetry)
   I want to request hourly microclimate and soil moisture readings from the API
   so I can plot thermal and soil moisture curves in the dashboard
 
-  # Escenario 1: Consulta de series históricas
+  # Scenario 1: Successful telemetry time-series query
   Scenario Outline: Successful telemetry time-series query
     Given a GET request to "/api/v1/plots/<plotId>/telemetries" with parameters "?startDate=<startDate>&endDate=<endDate>"
     When the API validates the time range and retrieves continuous hourly series
@@ -14,7 +14,7 @@ Feature: Environmental and soil telemetry time-series query (Telemetry)
       | plotId            | startDate            | endDate              |
       | plot-jeronomo-001 | 2026-09-01T00:00:00Z | 2026-09-07T23:59:59Z |
 
-  # Escenario 2: Rango temporal ilógico
+  # Scenario 2: Illogical telemetry time range
   Scenario Outline: Illogical telemetry time range
     Given a GET request with a start date posterior to the end date: "<startDate>", "<endDate>"
     When the API validates date range consistency

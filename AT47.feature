@@ -3,7 +3,7 @@ Feature: Agroclimatic incidents query associated with specific plot (Telemetry)
   I want to query plot agroclimatic incidents via GET to /api/v1/plots/{plotId}/agroclimatic-incidents
   so I can display climatic risks and recommendations in the individual plot card
 
-  # Escenario 1: Listado exitoso de incidentes del cuartel
+  # Scenario 1: Successful listing of plot incidents
   Scenario Outline: Successful listing of plot incidents
     Given a GET request to "/api/v1/plots/<plotId>/agroclimatic-incidents" with optional filters
     When the API validates plot ownership and retrieves anomaly events associated with the plot
@@ -14,7 +14,7 @@ Feature: Agroclimatic incidents query associated with specific plot (Telemetry)
       | plotId            | activeOnly | expectedIncidentCount |
       | plot-jeronomo-001 | true       | 1                     |
 
-  # Escenario 2: Cuartel no encontrado en inventario
+  # Scenario 2: Plot not found for incidents query
   Scenario Outline: Plot not found for incidents query
     Given a GET request to "/api/v1/plots/<plotId>/agroclimatic-incidents" with a non-existent plotId
     When the service queries plot existence
