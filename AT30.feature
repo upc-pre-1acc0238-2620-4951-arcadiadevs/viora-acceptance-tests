@@ -34,3 +34,28 @@ Feature: Early aggregated projection of sustained green and black olive intake v
     Examples:
       | campaignYear | actor           |
       | 2026         | usr-farmer-0042 |
+
+  # Scenario 4: Intake projection split by caliber ranges
+  Scenario Outline: Intake projection split by caliber ranges
+    Given a GET request to "/api/v1/intake-forecasts/<campaignYear>" sent by "<actor>" for a cooperative "<rangesState>"
+    When the API spreads the tons of each estimable plot into the range of its caliber
+    Then the response status is 200
+    And the response returns <caliberBreakdown> with unsizedTons and outOfRangeTons as <totals>
+
+    Examples:
+      | campaignYear | actor            | rangesState            | caliberBreakdown     | totals  |
+      | 2026         | usr-manager-0007 | with caliber ranges    | green and black tons | numbers |
+      | 2026         | usr-manager-0007 | without caliber ranges | an empty list        | null    |
+
+  # Scenario 5: Graded confidence level with pending sampling
+  Scenario Outline: Graded confidence level with pending sampling
+    Given a GET request to "/api/v1/intake-forecasts/<campaignYear>" sent by "<actor>" for a cooperative with <plotCoverage> percent of sampled plots and <hectareCoverage> percent of sampled hectares
+    When the API grades the confidence with the lower coverage against the 50 and 80 percent thresholds
+    Then the response status is 200
+    And the response returns confidenceLevel "<confidenceLevel>" with pendingPlots and pendingHectares, keeping status and coveragePercent
+
+    Examples:
+      | campaignYear | actor            | plotCoverage | hectareCoverage | confidenceLevel |
+      | 2026         | usr-manager-0007 | 40           | 70              | LOW             |
+      | 2026         | usr-manager-0007 | 50           | 90              | MEDIUM          |
+      | 2026         | usr-manager-0007 | 85           | 80              | HIGH            |
