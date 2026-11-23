@@ -34,3 +34,14 @@ Feature: Member plot agronomic overview query in read-only supervision mode (Coo
     Examples:
       | id                                   | actor            |
       | 3f6b2c1e-9a4d-4e8b-b1c2-7d5e6f8a9b01 | usr-manager-0007 |
+
+  # Scenario 4: Member producer identification in the plot detail
+  Scenario Outline: Member producer identification in the plot detail
+    Given a GET request to "/api/v1/member-plots/<id>" sent by "<actor>" for a plot of a linked member
+    When the API builds the technical summary of the plot
+    Then the response status is 200
+    And the response returns producerId, producerName and the masked memberCode "<memberCode>", matching the values of "/api/v1/member-plots"
+
+    Examples:
+      | id                                   | actor            | memberCode |
+      | 3f6b2c1e-9a4d-4e8b-b1c2-7d5e6f8a9b01 | usr-manager-0007 | COOP-••2Q  |
