@@ -23,9 +23,9 @@ Feature: Field fruit set sampling recording and synchronization (Thinning)
     And the response indicates sampling batch constraint violations
 
     Examples:
-      | plotId            | shootsCount | fruitsCount | reason                   |
-      | plot-jeronomo-001 | -5          | 100         | negative shoot count     |
-      | plot-jeronomo-001 | 10          | 5000        | biologically impossible  |
+      | plotId            | shootsCount | fruitsCount | reason                  |
+      | plot-jeronomo-001 | -5          | 100         | negative shoot count    |
+      | plot-jeronomo-001 | 10          | 5000        | biologically impossible |
 
   # Scenario 3: Plot not found for sampling submission
   Scenario Outline: Plot not found for sampling submission
@@ -46,3 +46,29 @@ Feature: Field fruit set sampling recording and synchronization (Thinning)
     Examples:
       | plotId          | actor           |
       | plot-yarada-001 | usr-farmer-0042 |
+
+  # Scenario 5: Fruit sample caliber in the sampling round
+  Scenario Outline: Fruit sample caliber in the sampling round
+    Given a POST request to "/api/v1/plots/<plotId>/samplings" sent by "<actor>" with an optional fruitSample containing <fruitCount> and <weightGrams>
+    When the API validates the sample and computes fruitsPerKg as fruitCount times 1000 divided by weightGrams
+    Then the response status is 201
+    And the response returns fruitsPerKg <expectedFruitsPerKg> for the intake caliber breakdown
+
+    Examples:
+      | plotId            | actor           | fruitCount | weightGrams | expectedFruitsPerKg |
+      | plot-jeronomo-001 | usr-farmer-0042 | 50         | 250         | 200                 |
+      | plot-jeronomo-001 | usr-farmer-0042 | 100        | 1000        | 100                 |
+
+  # Scenario 6: Invalid fruit sample
+  Scenario Outline: Invalid fruit sample
+    Given a POST request to "/api/v1/plots/<plotId>/samplings" sent by "<actor>" with a fruitSample containing <fruitCount> and <weightGrams>
+    When the API validates the fruit sample limits and the commercial caliber scale from 60 to 2000 fruits per kg
+    Then the response status is 400
+    And the sampling round is not registered
+
+    Examples:
+      | plotId            | actor           | fruitCount | weightGrams | reason                           |
+      | plot-jeronomo-001 | usr-farmer-0042 | 0          | 250         | fruit count out of limits        |
+      | plot-jeronomo-001 | usr-farmer-0042 | 50         | 0           | weight out of limits             |
+      | plot-jeronomo-001 | usr-farmer-0042 | 10         | 2000        | caliber below 60 fruits per kg   |
+      | plot-jeronomo-001 | usr-farmer-0042 | 1000       | 100         | caliber above 2000 fruits per kg |
